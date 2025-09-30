@@ -1,15 +1,16 @@
 
 import React, { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { ArtistProfile, PortfolioImage } from "@/types/artist";
 import ProfileHeader from "@/components/artist-profile/ProfileHeader";
 import ServicesSection from "@/components/artist-profile/ServicesSection";
 import PortfolioGallery from "@/components/artist-profile/PortfolioGallery";
 import ContactSection from "@/components/artist-profile/ContactSection";
 import { Card, CardContent } from "@/components/ui/card";
-import { Service, PortfolioImage } from "./types";
+import { Service } from "./types";
 
 interface ArtistProfileContentProps {
-  profile: any; // Using any to bypass TypeScript errors for now
+  profile: ArtistProfile;
   portfolioImages: PortfolioImage[];
   services: Service[];
   viewCount: number | null;

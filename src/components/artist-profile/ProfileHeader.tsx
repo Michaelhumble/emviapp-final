@@ -1,5 +1,6 @@
 import React from "react";
 import { getLocationString } from "@/types/profile";
+import { ArtistProfile } from "@/types/artist";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Eye } from "lucide-react";
@@ -7,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ProfileHeaderProps {
-  profile: any; // Using any to bypass TypeScript errors for now
+  profile: ArtistProfile;
   isSalonOwner: boolean;
   handleBooking: () => void;
   viewCount: number | null;

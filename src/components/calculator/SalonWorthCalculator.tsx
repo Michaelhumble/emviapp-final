@@ -22,6 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const SalonWorthCalculator: React.FC = () => {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1); // 1-4: Business Info, Lease & Location, Reputation, Result
   const [result, setResult] = useState<ReturnType<typeof calculateSalonValuation> | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [email, setEmail] = useState('');
@@ -38,6 +39,7 @@ export const SalonWorthCalculator: React.FC = () => {
     e.preventDefault();
     
     setIsCalculating(true);
+    setCurrentStep(4); // Move to Result step
     
     // Simulate calculation time for better UX
     await new Promise(resolve => setTimeout(resolve, 2500));
@@ -49,6 +51,19 @@ export const SalonWorthCalculator: React.FC = () => {
     
     // Show sticky bar on mobile after a moment
     setTimeout(() => setShowStickyBar(true), 500);
+  };
+
+  // Track which step user is on based on input focus
+  const handleInputFocus = (step: number) => {
+    if (!result) {
+      setCurrentStep(step);
+    }
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    // Shift+Tab navigation handled by browser default behavior
+    // Enter to advance is default form behavior
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -111,7 +126,7 @@ export const SalonWorthCalculator: React.FC = () => {
     <TooltipProvider>
       <div className="max-w-4xl mx-auto px-4">
         {/* Progress Bar */}
-        <ProgressBar currentStep={result ? 4 : 1} />
+        <ProgressBar currentStep={currentStep} />
         
         <div className="bg-white rounded-2xl shadow-2xl border-2 border-purple-100 p-8 md:p-12">
           <div className="text-center mb-8">
@@ -124,8 +139,8 @@ export const SalonWorthCalculator: React.FC = () => {
             </p>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Monthly Revenue */}
+          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-6">
+              {/* Monthly Revenue - Step 1: Business Info */}
               <div className="space-y-2">
                 <Label htmlFor="revenue" className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
@@ -145,6 +160,7 @@ export const SalonWorthCalculator: React.FC = () => {
                   placeholder="50000"
                   value={inputs.monthlyRevenue || ''}
                   onChange={(e) => setInputs({ ...inputs, monthlyRevenue: Number(e.target.value) })}
+                  onFocus={() => handleInputFocus(1)}
                   required
                   aria-label="Average monthly revenue"
                 />
@@ -154,7 +170,7 @@ export const SalonWorthCalculator: React.FC = () => {
                 </p>
               </div>
 
-              {/* Number of Stations */}
+              {/* Number of Stations - Step 1: Business Info */}
               <div className="space-y-2">
                 <Label htmlFor="stations" className="flex items-center gap-2">
                   <Building2 className="w-4 h-4" />
@@ -174,6 +190,7 @@ export const SalonWorthCalculator: React.FC = () => {
                   placeholder="10"
                   value={inputs.numberOfStations || ''}
                   onChange={(e) => setInputs({ ...inputs, numberOfStations: Number(e.target.value) })}
+                  onFocus={() => handleInputFocus(1)}
                   required
                   aria-label="Number of nail stations"
                 />
@@ -183,7 +200,7 @@ export const SalonWorthCalculator: React.FC = () => {
                 </p>
               </div>
 
-              {/* Zip Code */}
+              {/* Zip Code - Step 2: Lease & Location */}
               <div className="space-y-2">
                 <Label htmlFor="zipCode" className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
@@ -203,13 +220,14 @@ export const SalonWorthCalculator: React.FC = () => {
                   placeholder="92704"
                   value={inputs.zipCode}
                   onChange={(e) => setInputs({ ...inputs, zipCode: e.target.value })}
+                  onFocus={() => handleInputFocus(2)}
                   required
                   maxLength={5}
                   aria-label="Zip code"
                 />
               </div>
 
-              {/* Lease Length */}
+              {/* Lease Length - Step 2: Lease & Location */}
               <div className="space-y-2">
                 <Label htmlFor="lease" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
@@ -225,9 +243,10 @@ export const SalonWorthCalculator: React.FC = () => {
                 </Label>
                 <Select
                   value={inputs.leaseLength}
-                  onValueChange={(value: 'short-term' | 'long-term') => 
-                    setInputs({ ...inputs, leaseLength: value })
-                  }
+                  onValueChange={(value: 'short-term' | 'long-term') => {
+                    setInputs({ ...inputs, leaseLength: value });
+                    handleInputFocus(2);
+                  }}
                 >
                   <SelectTrigger id="lease">
                     <SelectValue placeholder="Select lease length" />
@@ -239,7 +258,7 @@ export const SalonWorthCalculator: React.FC = () => {
                 </Select>
               </div>
 
-              {/* Google Reviews (Optional) */}
+              {/* Google Reviews (Optional) - Step 3: Reputation */}
               <div className="space-y-4 p-4 bg-muted/50 rounded-lg border border-dashed">
                 <div className="flex items-start gap-2">
                   <Star className="w-5 h-5 text-primary mt-0.5" />
@@ -263,6 +282,7 @@ export const SalonWorthCalculator: React.FC = () => {
                       placeholder="4.8"
                       value={inputs.googleRating || ''}
                       onChange={(e) => setInputs({ ...inputs, googleRating: Number(e.target.value) })}
+                      onFocus={() => handleInputFocus(3)}
                       aria-label="Google average rating"
                     />
                   </div>
@@ -275,6 +295,7 @@ export const SalonWorthCalculator: React.FC = () => {
                       placeholder="250"
                       value={inputs.googleReviewCount || ''}
                       onChange={(e) => setInputs({ ...inputs, googleReviewCount: Number(e.target.value) })}
+                      onFocus={() => handleInputFocus(3)}
                       aria-label="Google review count"
                     />
                   </div>

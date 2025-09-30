@@ -1,13 +1,14 @@
 
 import React from "react";
 import { getLocationString } from "@/types/profile";
+import { ArtistProfile } from "@/types/artist";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Mail, Phone, MapPin, Instagram, Globe, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ContactSectionProps {
-  profile: any; // Using any to bypass TypeScript errors for now
+  profile: ArtistProfile;
   onBookingRequest: () => void;
 }
 
