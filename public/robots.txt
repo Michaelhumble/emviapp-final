@@ -16,4 +16,5 @@ Allow: /salons
 Allow: /blog
 
 Sitemap: https://www.emvi.app/sitemap.xml
+Sitemap: https://www.emvi.app/city-sitemap.xml
 Sitemap: https://www.emvi.app/rss.xml
