@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.21.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +33,31 @@ serve(async (req) => {
   }
 
   try {
+    // Parse and validate request body
+    const BodySchema = z.object({
+      artist_id: z.string().uuid(),
+      service_id: z.string().uuid().optional().nullable(),
+      client_name: z.string().min(1).max(120),
+      client_email: z.string().email().max(254),
+      client_phone: z.string().max(30).optional().nullable(),
+      starts_at: z.string().datetime(),
+      ends_at: z.string().datetime(),
+      notes: z.string().max(1000).optional().nullable(),
+      source: z.enum(['web', 'hubspot', 'manual']).optional()
+    });
+
+    const raw = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error("Booking validation failed:", parsed.error);
+      return new Response(
+        JSON.stringify({ error: "invalid_request" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const bookingRequest = parsed.data;
+
     // Create a Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -42,27 +68,6 @@ serve(async (req) => {
         },
       }
     );
-
-    const bookingRequest: BookingRequest = await req.json();
-
-    // Validate required fields
-    if (!bookingRequest.artist_id || !bookingRequest.client_name || !bookingRequest.client_email) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields: artist_id, client_name, client_email" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate ISO timestamp formats
-    try {
-      new Date(bookingRequest.starts_at);
-      new Date(bookingRequest.ends_at);
-    } catch {
-      return new Response(
-        JSON.stringify({ error: "Invalid datetime format. Use ISO timestamps." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     // Check for booking conflicts
     const { data: conflictCheck, error: conflictError } = await supabaseClient.rpc(

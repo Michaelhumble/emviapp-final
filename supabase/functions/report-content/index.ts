@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -34,28 +35,25 @@ serve(async (req) => {
       throw new Error('Invalid authentication');
     }
 
-    const { 
-      contentType, 
-      contentId, 
-      reason, 
-      details 
-    } = await req.json();
+    // Parse and validate request body
+    const BodySchema = z.object({
+      contentType: z.enum(['post', 'ai_answer', 'comment']),
+      contentId: z.string().uuid(),
+      reason: z.enum(['spam', 'inappropriate', 'abuse', 'off_topic', 'fake', 'other']),
+      details: z.string().max(2000).optional().nullable()
+    });
 
-    // Validate input
-    if (!contentType || !contentId || !reason) {
-      throw new Error('Missing required fields: contentType, contentId, reason');
+    const raw = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error('Report validation failed:', parsed.error);
+      return new Response(JSON.stringify({ error: "invalid_request" }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    const validContentTypes = ['post', 'ai_answer', 'comment'];
-    const validReasons = ['spam', 'inappropriate', 'abuse', 'off_topic', 'fake', 'other'];
-
-    if (!validContentTypes.includes(contentType)) {
-      throw new Error('Invalid content type');
-    }
-
-    if (!validReasons.includes(reason)) {
-      throw new Error('Invalid report reason');
-    }
+    const { contentType, contentId, reason, details } = parsed.data;
 
     console.log('Content report received:', {
       reporterId: user.id,

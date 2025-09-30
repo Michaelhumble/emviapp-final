@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,16 +53,72 @@ serve(async (req) => {
     const user = data.user;
     console.log('✅ [SALON-CHECKOUT] User authenticated:', user.email);
 
-    // Parse request body
-    const body = await req.json();
+    // Parse and validate request body
+    const BodySchema = z.object({
+      pricingOptions: z.object({
+        selectedPricingTier: z.enum(['basic', 'gold', 'premium', 'annual']),
+        featuredAddon: z.boolean().optional()
+      }),
+      formData: z.object({
+        salonName: z.string().min(1).max(200),
+        businessType: z.string().max(100).optional().nullable(),
+        establishedYear: z.number().int().optional().nullable(),
+        address: z.string().max(300).optional().nullable(),
+        city: z.string().max(100),
+        state: z.string().max(50),
+        zipCode: z.string().max(20).optional().nullable(),
+        neighborhood: z.string().max(100).optional().nullable(),
+        hideExactAddress: z.boolean().optional(),
+        askingPrice: z.string().max(50),
+        monthlyRent: z.union([z.string(), z.number()]).optional().nullable(),
+        monthlyRevenue: z.string().max(50).optional().nullable(),
+        monthlyProfit: z.string().max(50).optional().nullable(),
+        numberOfStaff: z.number().int().optional().nullable(),
+        numberOfTables: z.number().int().optional().nullable(),
+        numberOfChairs: z.number().int().optional().nullable(),
+        squareFeet: z.number().int().optional().nullable(),
+        vietnameseDescription: z.string().max(5000).optional().nullable(),
+        englishDescription: z.string().max(5000).optional().nullable(),
+        reasonForSelling: z.string().max(1000).optional().nullable(),
+        virtualTourUrl: z.string().url().max(2048).optional().nullable(),
+        otherNotes: z.string().max(2000).optional().nullable(),
+        contactName: z.string().max(100).optional().nullable(),
+        contactEmail: z.string().email().max(254).optional().nullable(),
+        contactPhone: z.string().max(30).optional().nullable(),
+        contactFacebook: z.string().max(200).optional().nullable(),
+        contactZalo: z.string().max(200).optional().nullable(),
+        contactNotes: z.string().max(500).optional().nullable(),
+        willTrain: z.boolean().optional(),
+        hasHousing: z.boolean().optional(),
+        hasWaxRoom: z.boolean().optional(),
+        hasDiningRoom: z.boolean().optional(),
+        hasLaundry: z.boolean().optional(),
+        hasParking: z.boolean().optional(),
+        equipmentIncluded: z.boolean().optional(),
+        leaseTransferable: z.boolean().optional(),
+        sellerFinancing: z.boolean().optional(),
+        helpWithTransition: z.boolean().optional(),
+        photoUrls: z.array(z.string().url().max(2048)).optional()
+      })
+    });
+
+    const raw = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error('❌ [SALON-CHECKOUT] Request validation failed:', parsed.error);
+      return new Response(
+        JSON.stringify({ error: "invalid_request" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        }
+      );
+    }
+
+    const body = parsed.data;
     console.log('📦 [SALON-CHECKOUT] Request body received with keys:', Object.keys(body));
 
     const { pricingOptions, formData } = body;
-    
-    if (!pricingOptions || !formData) {
-      console.error('❌ [SALON-CHECKOUT] Missing required data');
-      throw new Error("Missing pricingOptions or formData");
-    }
 
     console.log('📋 [SALON-CHECKOUT] Form data summary:', {
       salonName: formData.salonName,

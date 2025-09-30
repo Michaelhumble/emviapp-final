@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -54,15 +55,44 @@ serve(async (req) => {
       );
     }
 
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch (parseError) {
-      console.error("❌ Failed to parse request body:", parseError);
+    // Parse and validate request body
+    const BodySchema = z.object({
+      jobData: z.object({
+        title: z.string().min(1).max(200),
+        category: z.string().max(100),
+        location: z.string().max(200).optional().nullable(),
+        description: z.string().max(5000),
+        vietnamese_title: z.string().max(200).optional().nullable(),
+        vietnamese_description: z.string().max(5000).optional().nullable(),
+        compensationType: z.string().max(100).optional().nullable(),
+        compensationDetails: z.string().max(500).optional().nullable(),
+        compensation_details: z.string().max(500).optional().nullable(),
+        requirements: z.union([z.string(), z.array(z.string())]).optional().nullable(),
+        contactName: z.string().max(100).optional(),
+        contactPhone: z.string().max(30).optional(),
+        contactEmail: z.string().email().max(254).optional(),
+        contactNotes: z.string().max(500).optional(),
+        salonName: z.string().max(200).optional(),
+        selectedPlan: z.string().max(50).optional(),
+        selectedPrice: z.number().optional(),
+        selectedDuration: z.number().int().optional(),
+        image_url: z.string().url().max(2048).optional().nullable(),
+        image_urls: z.array(z.string().url().max(2048)).optional().nullable(),
+        photos: z.array(z.string().url().max(2048)).optional().nullable(),
+        contact_info: z.any().optional(),
+        metadata: z.any().optional()
+      }),
+      tier: z.string().max(50).optional(),
+      finalPrice: z.number().min(0).optional(),
+      durationMonths: z.number().int().min(1).max(24).optional()
+    });
+
+    const raw = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error("❌ Request validation failed:", parsed.error);
       return new Response(
-        JSON.stringify({ 
-          error: "Invalid request body" 
-        }),
+        JSON.stringify({ error: "invalid_request" }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 400,
@@ -70,6 +100,7 @@ serve(async (req) => {
       );
     }
 
+    const requestBody = parsed.data;
     const { jobData } = requestBody;
     console.log("📝 Job data received:", jobData);
 

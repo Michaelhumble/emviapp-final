@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -28,18 +29,32 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { firstname, lastname, email, phone, company, message, currentUrl, userAgent }: ContactFormData = await req.json();
+    // Parse and validate request body
+    const BodySchema = z.object({
+      firstname: z.string().min(1).max(120),
+      lastname: z.string().max(120).optional().nullable(),
+      email: z.string().email().max(254),
+      phone: z.string().max(30).optional().nullable(),
+      company: z.string().max(200).optional().nullable(),
+      message: z.string().min(5).max(4000),
+      currentUrl: z.string().url().max(2048).optional().nullable(),
+      userAgent: z.string().max(500).optional().nullable()
+    });
 
-    // Validate required fields
-    if (!firstname || !email || !message) {
+    const raw = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error("Contact form validation failed:", parsed.error);
       return new Response(
-        JSON.stringify({ error: "All required fields must be filled" }),
+        JSON.stringify({ error: "invalid_request" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
     }
+
+    const { firstname, lastname, email, phone, company, message, currentUrl, userAgent } = parsed.data;
 
     const fullName = `${firstname} ${lastname || ''}`.trim();
 
