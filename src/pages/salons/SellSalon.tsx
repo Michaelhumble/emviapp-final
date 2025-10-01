@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -40,6 +40,13 @@ const salonSizes = [
 const SellSalon = () => {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
+  
+  // Auto-redirect to full wizard on mount
+  useEffect(() => {
+    console.info('[SALON-REDIRECT] Auto-redirecting to full checkout wizard at /sell-salon');
+    navigate('/sell-salon', { replace: true });
+  }, [navigate]);
+  
   const [formData, setFormData] = useState({
     salon_name: "",
     business_type: "",
@@ -95,54 +102,13 @@ const SellSalon = () => {
         return;
       }
       
-      // ✅ FIXED: Use paid checkout flow via create-salon-checkout
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-salon-checkout',
-        {
-          body: {
-            pricingOptions: {
-              selectedPricingTier: 'basic',
-              featuredAddon: formData.is_urgent
-            },
-            formData: {
-              salonName: formData.salon_name,
-              businessType: formData.business_type,
-              city: formData.city,
-              state: formData.state,
-              askingPrice: formData.asking_price,
-              englishDescription: formData.description,
-              willTrain: false,
-              hasHousing: false,
-              hasWaxRoom: false,
-              hasDiningRoom: false,
-              hasLaundry: false,
-              hasParking: false,
-              equipmentIncluded: false,
-              leaseTransferable: false,
-              sellerFinancing: false,
-              helpWithTransition: false,
-              hideExactAddress: formData.is_private,
-              photoUrls: []
-            }
-          }
-        }
-      );
-      
-      if (checkoutError) {
-        throw new Error(checkoutError.message || 'Failed to create checkout session');
-      }
-      
-      if (checkoutData?.url) {
-        // Redirect to Stripe checkout in same tab
-        console.log('🔍 [PAYMENT-REDIRECT] Redirecting to Stripe checkout in same tab...');
-        window.location.href = checkoutData.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
+      // Redirect to the full wizard for paid checkout flow
+      console.info('[SALON-FORM-REDIRECT] Redirecting to full checkout wizard...');
+      navigate('/sell-salon');
       
     } catch (error: any) {
-      console.error("Error creating checkout:", error);
-      toast.error(error.message || "Failed to proceed to checkout. Please try again.");
+      console.error("Error redirecting to checkout:", error);
+      toast.error("Please use the full checkout wizard to list your salon.");
       setLoading(false);
     }
   };
@@ -156,12 +122,15 @@ const SellSalon = () => {
             Reach thousands of potential buyers in the beauty industry
           </p>
           
-          <Alert className="mb-6 bg-blue-50 border-blue-200">
-            <Info className="h-4 w-4 text-blue-500" />
-            <AlertTitle>Confidentiality Assured</AlertTitle>
-            <AlertDescription className="text-sm text-blue-700">
-              You can choose to make your listing private. Private listings won't show your salon name 
-              or exact location until a vetted buyer expresses interest.
+          <Alert className="mb-6 bg-purple-50 border-purple-200">
+            <Info className="h-4 w-4 text-purple-500" />
+            <AlertTitle>Redirecting to Full Wizard...</AlertTitle>
+            <AlertDescription className="text-sm text-purple-700">
+              We're redirecting you to our secure checkout wizard with all the features you need to list your salon successfully.
+              If you're not redirected automatically, please{' '}
+              <button onClick={() => navigate('/sell-salon')} className="underline font-medium">
+                click here
+              </button>.
             </AlertDescription>
           </Alert>
           

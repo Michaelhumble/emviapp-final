@@ -6,7 +6,7 @@ import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
 import SalonsFinalsPage from './pages/salons/SalonsFinal';
-import SellSalon from './pages/salons/SellSalon';
+// REMOVED: SellSalon basic form - now redirects to wizard
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
 import Freelancers from './pages/Freelancers';
@@ -137,10 +137,7 @@ const routes = [
     path: '/salons/:id',
     element: <SimpleSalonDetailPage />,
   },
-  {
-    path: '/sell-salon',
-    element: <SellSalon />,
-  },
+  // REMOVED: /sell-salon route - handled by App.tsx wizard flow
   {
     path: '/salon-marketplace',
     element: <SalonMarketplace />,
