@@ -95,33 +95,54 @@ const SellSalon = () => {
         return;
       }
       
-      // Create new salon sale listing
-      const { data, error } = await supabase
-        .from('salon_sales')
-        .insert({
-          salon_name: formData.salon_name,
-          business_type: formData.business_type,
-          city: formData.city,
-          state: formData.state,
-          asking_price,
-          size: formData.size,
-          description_combined: formData.description,
-          is_urgent: formData.is_urgent,
-          is_private: formData.is_private,
-          user_id: user.id,
-        })
-        .select()
-        .single();
+      // ✅ FIXED: Use paid checkout flow via create-salon-checkout
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-salon-checkout',
+        {
+          body: {
+            pricingOptions: {
+              selectedPricingTier: 'basic',
+              featuredAddon: formData.is_urgent
+            },
+            formData: {
+              salonName: formData.salon_name,
+              businessType: formData.business_type,
+              city: formData.city,
+              state: formData.state,
+              askingPrice: formData.asking_price,
+              englishDescription: formData.description,
+              willTrain: false,
+              hasHousing: false,
+              hasWaxRoom: false,
+              hasDiningRoom: false,
+              hasLaundry: false,
+              hasParking: false,
+              equipmentIncluded: false,
+              leaseTransferable: false,
+              sellerFinancing: false,
+              helpWithTransition: false,
+              hideExactAddress: formData.is_private,
+              photoUrls: []
+            }
+          }
+        }
+      );
       
-      if (error) throw error;
+      if (checkoutError) {
+        throw new Error(checkoutError.message || 'Failed to create checkout session');
+      }
       
-      toast.success("Your salon has been listed for sale!");
-      navigate("/dashboard");
+      if (checkoutData?.url) {
+        // Redirect to Stripe checkout in same tab
+        console.log('🔍 [PAYMENT-REDIRECT] Redirecting to Stripe checkout in same tab...');
+        window.location.href = checkoutData.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
       
     } catch (error: any) {
-      console.error("Error listing salon:", error);
-      toast.error(error.message || "Failed to list salon. Please try again.");
-    } finally {
+      console.error("Error creating checkout:", error);
+      toast.error(error.message || "Failed to proceed to checkout. Please try again.");
       setLoading(false);
     }
   };
