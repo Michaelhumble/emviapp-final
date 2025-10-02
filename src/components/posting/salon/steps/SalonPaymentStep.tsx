@@ -9,7 +9,7 @@ import { useStripe } from "@/hooks/useStripe";
 import { CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabaseBypass } from "@/types/supabase-bypass";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface SalonPaymentStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -23,6 +23,9 @@ interface SalonPaymentStepProps {
 export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPaymentComplete, isEditMode = false, editId }: SalonPaymentStepProps) => {
   const { isLoading, initiatePayment } = useStripe();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isDebugMode = searchParams.has('debug_payment');
+  const [preflightError, setPreflightError] = React.useState<string | null>(null);
   
   const selectedOptions: SalonPricingOptions = {
     selectedPricingTier: form.watch("selectedPricingTier"),
@@ -139,6 +142,9 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
   };
 
   const handleContinueToPayment = async () => {
+    // Clear any previous preflight error
+    setPreflightError(null);
+    
     // Debug: log current state
     console.log('🔍 [PAYMENT-BUTTON] Button clicked!');
     console.log('🔍 [PAYMENT-BUTTON] Selected options:', selectedOptions);
@@ -147,7 +153,9 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
     
     if (!selectedOptions.selectedPricingTier) {
       console.log('❌ [PAYMENT-BUTTON] No pricing tier selected');
-      toast.error("Please select a pricing plan first");
+      const error = "Please select a pricing plan first";
+      setPreflightError(error);
+      toast.error(error);
       return;
     }
 
@@ -155,11 +163,25 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
     
     // Validate required fields
     const requiredFields = ['salonName', 'city', 'state', 'askingPrice', 'contactName', 'contactEmail', 'contactPhone'];
-    const missingFields = requiredFields.filter(field => !formData[field]);
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field];
+      return !value || (typeof value === 'string' && value.trim() === '');
+    });
     
     if (missingFields.length > 0) {
-      console.log('❌ [PAYMENT-BUTTON] Missing fields:', missingFields);
-      toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      const error = missingFields.includes('askingPrice')
+        ? 'Please add an asking price in Business Details (Step 3).'
+        : `Please fill in all required fields: ${missingFields.join(', ')}`;
+      
+      if (isDebugMode) {
+        console.log('🔍 [PAYMENT-PREFLIGHT] Missing fields:', JSON.stringify(missingFields));
+        toast.error(`[DEBUG] ${error}`, { duration: 10000 });
+      } else {
+        console.log('❌ [PAYMENT-BUTTON] Missing fields:', missingFields);
+        toast.error(error);
+      }
+      
+      setPreflightError(error);
       return;
     }
     
@@ -195,13 +217,27 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
 
   return (
     <div className="space-y-8">
+      {isDebugMode && (
+        <div 
+          data-testid="debug-mode" 
+          className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 text-center"
+        >
+          <p className="text-yellow-800 font-bold text-sm">
+            🐛 DEBUG MODE ACTIVE
+          </p>
+          <p className="text-yellow-700 text-xs mt-1">
+            Enhanced logging and error details enabled
+          </p>
+        </div>
+      )}
+      
       <SalonPricingPlans 
         selectedOptions={selectedOptions}
         onPlanSelect={handlePlanSelect}
         onFeaturedAddonChange={handleFeaturedAddonChange}
       />
       
-      <div className="flex justify-center pt-6">
+      <div className="flex flex-col items-center gap-4 pt-6">
         <Button
           onClick={isEditMode ? handleUpdateListing : handleContinueToPayment}
           disabled={!isValidSelection || isLoading}
@@ -220,13 +256,21 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
             </>
           )}
         </Button>
+        
+        {preflightError && (
+          <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 max-w-md">
+            <p className="text-red-700 text-sm font-medium text-center">
+              ⚠️ {preflightError}
+            </p>
+          </div>
+        )}
+        
+        {!isValidSelection && !preflightError && (
+          <p className="text-center text-red-500 text-sm font-medium">
+            ⚠️ Please select a pricing plan above to continue
+          </p>
+        )}
       </div>
-      
-      {!isValidSelection && (
-        <p className="text-center text-red-500 text-sm font-medium">
-          ⚠️ Please select a pricing plan above to continue
-        </p>
-      )}
     </div>
   );
 };

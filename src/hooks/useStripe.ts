@@ -69,11 +69,14 @@ export function useStripe() {
         }
       }
       
-      // Add uploaded photo URLs to form data
+      // Add uploaded photo URLs to form data and convert numeric strings to numbers
       const formDataWithPhotos = {
         ...formData,
         photoUrls: uploadedPhotoUrls,
-        photos: uploadedPhotoUrls
+        photos: uploadedPhotoUrls,
+        // CRITICAL: Convert string fields to numbers for edge function validation
+        askingPrice: formData.askingPrice ? Number(formData.askingPrice.toString().replace(/[^0-9.-]/g, '')) : undefined,
+        monthlyRent: formData.monthlyRent ? Number(formData.monthlyRent.toString().replace(/[^0-9.-]/g, '')) : undefined,
       };
       
       if (isDebugMode) {
@@ -83,7 +86,8 @@ export function useStripe() {
           formDataKeys: Object.keys(formDataWithPhotos || {}),
           photoCount: uploadedPhotoUrls.length,
           salonName: formDataWithPhotos.salonName,
-          askingPrice: formDataWithPhotos.askingPrice
+          askingPrice: formDataWithPhotos.askingPrice,
+          askingPriceType: typeof formDataWithPhotos.askingPrice
         });
       }
       

@@ -42,6 +42,10 @@ export const SalonBusinessStep = ({ form }: SalonBusinessStepProps) => {
                     placeholder="$350,000"
                     className="h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
                     {...field}
+                    onChange={(e) => {
+                      // Keep as string in form state for display, but ensure it's not undefined
+                      field.onChange(e.target.value || '');
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
