@@ -69,14 +69,26 @@ export function useStripe() {
         }
       }
       
-      // Add uploaded photo URLs to form data and convert numeric strings to numbers
+      /**
+       * CRITICAL TYPE CONTRACT with create-salon-checkout (edge function Zod schema):
+       * - askingPrice: STRING (edge function parses string → number)
+       * - monthlyRent: STRING or NUMBER
+       * - establishedYear, numberOfStaff, numberOfTables, numberOfChairs, squareFeet: NUMBER
+       * Do NOT change these types without updating the edge function schema.
+       */
       const formDataWithPhotos = {
         ...formData,
         photoUrls: uploadedPhotoUrls,
         photos: uploadedPhotoUrls,
-        // CRITICAL: Convert string fields to numbers for edge function validation
-        askingPrice: formData.askingPrice ? Number(formData.askingPrice.toString().replace(/[^0-9.-]/g, '')) : undefined,
-        monthlyRent: formData.monthlyRent ? Number(formData.monthlyRent.toString().replace(/[^0-9.-]/g, '')) : undefined,
+        // Keep these AS STRINGS to satisfy Zod (edge function parses them later)
+        askingPrice: formData.askingPrice?.toString() || "",
+        monthlyRent: formData.monthlyRent?.toString() || "",
+        // Ensure these are NUMBERS (coerce from input strings)
+        establishedYear: formData.establishedYear ? Number(formData.establishedYear) : null,
+        numberOfStaff: formData.numberOfStaff ? Number(formData.numberOfStaff) : null,
+        numberOfTables: formData.numberOfTables ? Number(formData.numberOfTables) : null,
+        numberOfChairs: formData.numberOfChairs ? Number(formData.numberOfChairs) : null,
+        squareFeet: formData.squareFeet ? Number(formData.squareFeet) : null,
       };
       
       if (isDebugMode) {
