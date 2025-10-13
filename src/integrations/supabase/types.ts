@@ -5841,6 +5841,14 @@ export type Database = {
         Args: { p_prompt: string; p_prompt_hash: string; p_user_id: string }
         Returns: string
       }
+      enqueue_reindex_url: {
+        Args: {
+          p_content_data: Json
+          p_content_id: string
+          p_content_type: string
+        }
+        Returns: boolean
+      }
       generate_affiliate_slug: {
         Args: { base_name: string }
         Returns: string
