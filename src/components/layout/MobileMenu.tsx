@@ -313,6 +313,19 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 </div>
               </nav>
             </div>
+
+            {/* 🌸 Salon Worth Curiosity Line (Mobile) */}
+            <div className="mt-4 px-4 pb-6 text-center text-xs text-gray-500 border-t border-gray-200 pt-4 flex-shrink-0">
+              💅 Want to know your salon's true worth — and how to make it grow?{' '}
+              <br />
+              <Link 
+                to="/salon-worth" 
+                onClick={onClose}
+                className="text-pink-400 hover:text-pink-500 hover:underline transition-colors duration-300"
+              >
+                Check your Salon Worth →
+              </Link>
+            </div>
           </motion.div>
         </>
       )}
