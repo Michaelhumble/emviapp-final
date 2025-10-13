@@ -70,8 +70,8 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
         return absImage;
       }
     }
-    // Fallback to default og image
-    return toAbs('/og-default.jpg');
+    // Fallback to EmviApp heart logo
+    return toAbs('/emvi-heart-og.png');
   };
   
   const finalOgImage = getValidOgImage(ogImage);

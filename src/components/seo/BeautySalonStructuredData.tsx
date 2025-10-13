@@ -44,7 +44,7 @@ const BeautySalonStructuredData: React.FC<BeautySalonStructuredDataProps> = ({
       "addressRegion": salon.state || location.split(',')[1]?.trim() || "US",
       "addressCountry": "US"
     },
-    "image": salon.images?.[0] || salon.image_url || `${baseUrl}/og-default.jpg`,
+    "image": salon.images?.[0] || salon.image_url || `${baseUrl}/emvi-heart-og.png`,
     "priceRange": "$$",
     "serviceType": "Beauty Services",
     "aggregateRating": salon.rating ? {

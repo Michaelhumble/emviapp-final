@@ -54,7 +54,7 @@ const SalonDetailSEO: React.FC<SalonDetailSEOProps> = ({ salon }) => {
       "addressRegion": salon.state || location.split(',')[1]?.trim() || "US",
       "addressCountry": "US"
     },
-    "image": salon.images?.[0] || salon.image_url || `${baseUrl}/og-default.jpg`,
+    "image": salon.images?.[0] || salon.image_url || `${baseUrl}/emvi-heart-og.png`,
     "priceRange": "$$",
     "serviceType": "Beauty Services",
     "hasOfferCatalog": {

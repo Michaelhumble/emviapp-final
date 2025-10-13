@@ -27,7 +27,7 @@ interface EnhancedOGTagsProps {
 const EnhancedOGTags: React.FC<EnhancedOGTagsProps> = ({
   title,
   description,
-  image = 'https://emvi.app/og-default.jpg',
+  image = 'https://emvi.app/emvi-heart-og.png',
   url,
   type = 'website',
   author,

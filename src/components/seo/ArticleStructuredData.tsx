@@ -35,7 +35,7 @@ const ArticleStructuredData: React.FC<ArticleStructuredDataProps> = ({
     "@type": type,
     "headline": title,
     "description": description,
-    "image": image || `${baseUrl}/og-default.jpg`,
+    "image": image || `${baseUrl}/emvi-heart-og.png`,
     "datePublished": publishedDate,
     "dateModified": modifiedDate || publishedDate,
     "author": {

@@ -20,7 +20,7 @@ interface ComprehensiveSEOProps {
 const ComprehensiveSEO: React.FC<ComprehensiveSEOProps> = ({
   title = 'EmviApp - The Beauty Industry\'s Missing Piece',
   description = 'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.',
-  image = 'https://www.emvi.app/og-default.jpg',
+  image = 'https://www.emvi.app/emvi-heart-og.png',
   type = 'website',
   author,
   publishedTime,
