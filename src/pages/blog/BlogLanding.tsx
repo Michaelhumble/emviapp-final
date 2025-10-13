@@ -94,7 +94,7 @@ const BlogLanding = () => {
       <DynamicSEO
         title="EmviApp Blog - Beauty Industry Insights & Tips"
         description="Discover the latest beauty industry trends, salon management tips, artist spotlights, and success stories. Expert insights for beauty professionals."
-        url="https://emvi.app/blog"
+        url="https://www.emvi.app/blog"
         type="website"
         image="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
         structuredData={{

@@ -2,38 +2,9 @@ import React from 'react';
 import DynamicSEO from './DynamicSEO';
 
 const HomepageSEO = () => {
+  // NOTE: Organization and WebSite schemas are now provided by GlobalSEOSchemas (site-wide)
+  // to avoid JSON-LD duplication. Only page-specific schemas remain here.
   const structuredData = [
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "EmviApp",
-      "description": "Premium beauty platform connecting professionals with opportunities",
-      "url": "https://www.emvi.app",
-      "logo": "https://www.emvi.app/logo.png",
-      "sameAs": [
-        "https://linkedin.com/company/emviapp",
-        "https://instagram.com/emviapp",
-        "https://tiktok.com/@emviapp",
-        "https://youtube.com/@emviapp"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "url": "https://www.emvi.app/contact"
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "EmviApp",
-      "description": "The Beauty Industry's Missing Piece - Premium platform for beauty professionals",
-      "url": "https://www.emvi.app",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://www.emvi.app/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    },
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
