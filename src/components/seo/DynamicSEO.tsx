@@ -18,7 +18,7 @@ interface DynamicSEOProps {
 const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - The Beauty Industry\'s Missing Piece',
   description = 'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.',
-  image = '/android-chrome-512x512.png',
+  image = '/emvi-heart-og.png',
   url = 'https://emvi.app',
   type = 'website',
   author,
@@ -65,14 +65,17 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
       <link rel="canonical" href={finalCanonicalUrl} />
       
       {/* Apple Touch Icons */}
-      <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
-      <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
-      <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="apple-touch-icon" href="/emvi-heart-icon.png" />
+      <link rel="apple-touch-icon" sizes="120x120" href="/emvi-heart-icon.png" />
+      <link rel="apple-touch-icon" sizes="152x152" href="/emvi-heart-icon.png" />
+      <link rel="apple-touch-icon" sizes="167x167" href="/emvi-heart-icon.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/emvi-heart-icon.png" />
       
       {/* Favicons */}
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="icon" href="/emvi-heart-icon.png" type="image/png" />
+      <link rel="shortcut icon" href="/emvi-heart-icon.png" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/emvi-heart-icon.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/emvi-heart-icon.png" />
       
       {/* Web App Manifest */}
       <link rel="manifest" href="/site.webmanifest" />

@@ -7,7 +7,12 @@ const GlobalSEOSchemas = () => {
     "@type": "Organization",
     "name": "EmviApp",
     "url": "https://emvi.app",
-    "logo": "https://emvi.app/android-chrome-512x512.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.emvi.app/meta/emvi-heart-og.png",
+      "width": 512,
+      "height": 512
+    },
     "sameAs": [
       "https://www.facebook.com/emviapp",
       "https://www.instagram.com/emviapp",
