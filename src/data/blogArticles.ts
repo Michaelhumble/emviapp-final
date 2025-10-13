@@ -121,8 +121,79 @@ const SalonOwnersAttractHireKeepArtists = lazy(() => import('@/pages/blog/salon-
 const BeautyIndustryHiddenJobMarket = lazy(() => import('@/pages/blog/500b-beauty-industry-hidden-job-market'));
 const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side-hustle-six-figures-nail-technicians'));
 
+// Lazy load pillar posts
+const GrowNailSalonEmviApp = lazy(() => import('@/pages/blog/grow-nail-salon-emviapp'));
+const VietnameseSalonSuccessStories = lazy(() => import('@/pages/blog/vietnamese-salon-success-stories'));
+const WhyNailTechsChooseEmviApp = lazy(() => import('@/pages/blog/why-nail-techs-choose-emviapp'));
+const PricingPostingReviewsSellFast = lazy(() => import('@/pages/blog/pricing-posting-reviews-sell-fast'));
+
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  // PILLAR POSTS - 2025 (Featured content)
+  {
+    id: 'grow-nail-salon-emviapp',
+    slug: 'grow-nail-salon-emviapp',
+    title: 'How to Grow Your Nail Salon with EmviApp (Real Tactics for 2025)',
+    description: 'Proven tactics to grow your nail salon in 2025. Vietnamese salon owners share strategies for boosting bookings, attracting talent, and maximizing revenue.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-02-15',
+    readTime: '12 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['nail salon growth', 'emviapp', 'salon marketing', 'vietnamese salons'],
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1200&h=630&fit=crop',
+    featured: true,
+    component: GrowNailSalonEmviApp,
+    url: '/blog/grow-nail-salon-emviapp'
+  },
+  {
+    id: 'vietnamese-salon-success-stories',
+    slug: 'vietnamese-salon-success-stories',
+    title: 'Vietnamese Salon Success Stories: From Side-Hustle to Sold-Out',
+    description: 'Real success stories from Vietnamese nail salon owners. Learn strategies that transformed struggling salons into thriving businesses.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-02-15',
+    readTime: '15 min read',
+    category: 'Success Stories',
+    categorySlug: 'success-stories',
+    tags: ['vietnamese salon', 'success stories', 'nail business', 'emvi'],
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&h=630&fit=crop',
+    featured: true,
+    component: VietnameseSalonSuccessStories,
+    url: '/blog/vietnamese-salon-success-stories'
+  },
+  {
+    id: 'why-nail-techs-choose-emviapp',
+    slug: 'why-nail-techs-choose-emviapp',
+    title: '7 Reasons Nail Techs Choose EmviApp in 2025',
+    description: 'Why thousands of nail technicians choose EmviApp: better leads, transparent jobs, Google-ranking profiles, and Vietnamese community support.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-02-15',
+    readTime: '10 min read',
+    category: 'Career Growth',
+    categorySlug: 'career-growth',
+    tags: ['nail tech jobs', 'artist profiles', 'emviapp', 'career growth'],
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1200&h=630&fit=crop',
+    featured: true,
+    component: WhyNailTechsChooseEmviApp,
+    url: '/blog/why-nail-techs-choose-emviapp'
+  },
+  {
+    id: 'pricing-posting-reviews-sell-fast',
+    slug: 'pricing-posting-reviews-sell-fast',
+    title: 'Pricing, Posting & Reviews: The Trio That Sells Your Salon Faster',
+    description: 'Master salon sale pricing, compelling listings, and review generation. Sell 40% faster at premium valuations with these proven tactics.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-02-15',
+    readTime: '13 min read',
+    category: 'Business Guide',
+    categorySlug: 'business-guide',
+    tags: ['sell salon', 'listing tips', 'reviews', 'salon valuation'],
+    image: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1200&h=630&fit=crop',
+    featured: true,
+    component: PricingPostingReviewsSellFast,
+    url: '/blog/pricing-posting-reviews-sell-fast'
+  },
   // NEWEST ARTICLES - 2025 (Always show first)
   {
     id: 'top-nail-beauty-industry-trends-2025',
