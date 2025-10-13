@@ -49,12 +49,12 @@ async function notifyGoogleIndexing(url: string, supabaseUrl: string, supabaseKe
 /**
  * Submit batch to IndexNow
  */
-async function submitToIndexNow(urls: string[]): Promise<boolean> {
+async function submitToIndexNow(urls: string[]): Promise<{ success: boolean; statusCode: number | null }> {
   try {
     const indexNowKey = Deno.env.get('INDEXNOW_KEY');
     if (!indexNowKey) {
       console.warn('⚠️ INDEXNOW_KEY not configured, skipping IndexNow submission');
-      return false;
+      return { success: false, statusCode: null };
     }
     
     const body = {
@@ -70,17 +70,20 @@ async function submitToIndexNow(urls: string[]): Promise<boolean> {
       body: JSON.stringify(body)
     });
     
-    if (!response.ok) {
+    const statusCode = response.status;
+    const success = statusCode === 200 || statusCode === 202;
+    
+    if (!success) {
       const error = await response.text();
-      console.error('IndexNow API error:', error);
-      return false;
+      console.error(`IndexNow API error (${statusCode}):`, error);
+    } else {
+      console.log(`✅ IndexNow: submitted ${urls.length} URLs (status: ${statusCode})`);
     }
     
-    console.log(`✅ IndexNow: submitted ${urls.length} URLs`);
-    return true;
+    return { success, statusCode };
   } catch (error) {
     console.error('IndexNow submission failed:', error);
-    return false;
+    return { success: false, statusCode: null };
   }
 }
 
@@ -168,7 +171,7 @@ Deno.serve(async (req) => {
     }
     
     // Submit all URLs to IndexNow
-    const indexNowSuccess = await submitToIndexNow(allUrls);
+    const indexNowResult = await submitToIndexNow(allUrls);
     
     // Ping sitemaps
     const sitemapsPinged = await pingSitemaps();
@@ -187,7 +190,7 @@ Deno.serve(async (req) => {
     
     // Mark non-job URLs as sent (IndexNow only)
     const nonJobUrls = allUrls.filter(url => !jobUrls.includes(url));
-    if (nonJobUrls.length > 0 && indexNowSuccess) {
+    if (nonJobUrls.length > 0 && indexNowResult.success) {
       await supabase
         .from('seo_reindex_queue')
         .update({ status: 'sent', lastmod: new Date().toISOString() })
@@ -221,13 +224,23 @@ Deno.serve(async (req) => {
         cities_failed: failedUrls.length,
         status: 'completed',
         completed_at: new Date().toISOString(),
-        errors: failedUrls.length > 0 ? failedUrls : null
+        errors: failedUrls.length > 0 ? failedUrls : null,
+        metadata: {
+          cities_processed: queueItems.length,
+          google_indexing: { success: googleSuccess, total: jobUrls.length },
+          indexnow: { 
+            success: indexNowResult.success, 
+            urls: allUrls.length,
+            status_code: indexNowResult.statusCode 
+          },
+          sitemaps_pinged: sitemapsPinged
+        }
       });
     
     console.log(`\n=== Summary ===`);
     console.log(`Total processed: ${queueItems.length}`);
     console.log(`Google Indexing API: ${googleSuccess}/${jobUrls.length}`);
-    console.log(`IndexNow: ${indexNowSuccess ? allUrls.length : 0} URLs`);
+    console.log(`IndexNow: ${indexNowResult.success ? allUrls.length : 0} URLs (status: ${indexNowResult.statusCode})`);
     console.log(`Sitemaps pinged: ${sitemapsPinged}/${SITEMAPS.length}`);
     console.log(`Successes: ${successUrls.length + nonJobUrls.length}`);
     console.log(`Failures: ${failedUrls.length}`);
@@ -236,7 +249,11 @@ Deno.serve(async (req) => {
       success: true,
       processed: queueItems.length,
       google_indexing: { success: googleSuccess, total: jobUrls.length },
-      indexnow: { success: indexNowSuccess, urls: allUrls.length },
+      indexnow: { 
+        success: indexNowResult.success, 
+        urls: allUrls.length,
+        status_code: indexNowResult.statusCode 
+      },
       sitemaps_pinged: sitemapsPinged,
       sent: successUrls.length + nonJobUrls.length,
       failed: failedUrls.length

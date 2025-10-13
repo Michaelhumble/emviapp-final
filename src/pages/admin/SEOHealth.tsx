@@ -10,20 +10,24 @@ interface QueueStats {
   queued: number;
   sent: number;
   error: number;
-  byType: Record<string, number>;
+  byType: Record<string, { queued: number; sent: number; error: number }>;
 }
 
 interface LastRun {
+  id: string;
   run_date: string;
-  cities_processed: number | null;
-  cities_succeeded: number | null;
-  cities_failed: number | null;
-  completed_at: string | null;
+  cities_processed: number;
+  cities_succeeded: number;
+  cities_failed: number;
+  completed_at: string;
+  status: string;
+  errors: any;
+  metadata?: any;
 }
 
 export default function SEOHealth() {
   const [queueStats, setQueueStats] = useState<QueueStats | null>(null);
-  const [lastRun, setLastRun] = useState<LastRun | null>(null);
+  const [lastRuns, setLastRuns] = useState<LastRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [rebuilding, setRebuilding] = useState(false);
   const { toast } = useToast();
@@ -55,22 +59,27 @@ export default function SEOHealth() {
           else if (item.status === 'sent') stats.sent++;
           else if (item.status === 'error') stats.error++;
           
-          stats.byType[item.type] = (stats.byType[item.type] || 0) + 1;
+          if (!stats.byType[item.type]) {
+            stats.byType[item.type] = { queued: 0, sent: 0, error: 0 };
+          }
+          
+          if (item.status === 'queued') stats.byType[item.type].queued++;
+          else if (item.status === 'sent') stats.byType[item.type].sent++;
+          else if (item.status === 'error') stats.byType[item.type].error++;
         });
         
         setQueueStats(stats);
       }
       
-      // Get last run
+      // Get last 3 runs
       const { data: runData } = await supabase
         .from('seo_indexing_logs')
         .select('*')
         .order('completed_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(3);
       
       if (runData) {
-        setLastRun(runData);
+        setLastRuns(runData);
       }
     } catch (error) {
       console.error('Error loading SEO stats:', error);
@@ -183,51 +192,95 @@ export default function SEOHealth() {
         <Card>
           <CardHeader>
             <CardTitle>Queue by Content Type</CardTitle>
-            <CardDescription>Distribution of URLs in the indexing queue</CardDescription>
+            <CardDescription>Status breakdown per content type</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(queueStats.byType).map(([type, count]) => (
-                <Badge key={type} variant="secondary" className="text-sm">
-                  {type}: {count}
-                </Badge>
+            <div className="space-y-4">
+              {Object.entries(queueStats.byType).map(([type, counts]) => (
+                <div key={type} className="border-b pb-3 last:border-0">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="capitalize font-semibold">{type}</span>
+                    <span className="text-sm text-muted-foreground">
+                      Total: {counts.queued + counts.sent + counts.error}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Queued:</span>
+                      <span className="font-mono">{counts.queued}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Sent:</span>
+                      <span className="font-mono text-green-600">{counts.sent}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Errors:</span>
+                      <span className="font-mono text-destructive">{counts.error}</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>
         </Card>
       )}
       
-      {/* Last Run Stats */}
-      {lastRun && (
+      {/* Last 3 Cron Runs */}
+      {lastRuns && lastRuns.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Last Cron Run</CardTitle>
-            <CardDescription>
-              {lastRun.completed_at 
-                ? new Date(lastRun.completed_at).toLocaleString() 
-                : 'Never'}
-            </CardDescription>
+            <CardTitle>Recent Cron Runs</CardTitle>
+            <CardDescription>Last 3 automated reindex executions</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="font-medium">Processed</div>
-                <div className="text-2xl font-bold">
-                  {lastRun.cities_processed || 0}
+          <CardContent>
+            <div className="space-y-3">
+              {lastRuns.map((run) => (
+                <div key={run.id} className="border-b pb-3 last:border-0">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="text-sm font-medium">
+                        {run.completed_at ? new Date(run.completed_at).toLocaleString() : 'In progress'}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {run.run_date}
+                      </div>
+                    </div>
+                    <Badge variant={run.status === 'completed' || run.status === 'success' ? 'default' : 'destructive'}>
+                      {run.status}
+                    </Badge>
+                  </div>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span>URLs processed:</span>
+                      <span className="font-mono">{run.cities_processed || 0}</span>
+                    </div>
+                    {run.metadata?.google_indexing && (
+                      <div className="flex justify-between">
+                        <span>Google Jobs API:</span>
+                        <span className="font-mono text-green-600">
+                          {run.metadata.google_indexing.success}/{run.metadata.google_indexing.total}
+                        </span>
+                      </div>
+                    )}
+                    {run.metadata?.indexnow && (
+                      <div className="flex justify-between">
+                        <span>IndexNow:</span>
+                        <span className="font-mono">
+                          {run.metadata.indexnow.success 
+                            ? `✓ ${run.metadata.indexnow.urls} URLs (${run.metadata.indexnow.status_code})` 
+                            : '✗ Failed'}
+                        </span>
+                      </div>
+                    )}
+                    {run.metadata?.sitemaps_pinged !== undefined && (
+                      <div className="flex justify-between">
+                        <span>Sitemaps pinged:</span>
+                        <span className="font-mono">{run.metadata.sitemaps_pinged}/7</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="font-medium">Succeeded</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {lastRun.cities_succeeded || 0}
-                </div>
-              </div>
-              <div>
-                <div className="font-medium">Failed</div>
-                <div className="text-2xl font-bold text-destructive">
-                  {lastRun.cities_failed || 0}
-                </div>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
