@@ -338,6 +338,27 @@ const Footer: React.FC = () => {
             </p>
           </motion.div>
 
+          {/* ✨ Salon Worth Curiosity Line */}
+          <motion.div 
+            className="mt-6 mb-6 text-center"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-sm text-purple-200 leading-relaxed max-w-3xl mx-auto">
+              💅 Curious what your salon is worth — and how to grow it next?{' '}
+              <br className="sm:hidden" />
+              <Link 
+                to="/salon-worth" 
+                className="text-pink-400 hover:text-pink-300 hover:underline transition-all duration-300 font-medium"
+              >
+                Try the free Salon Worth Calculator
+              </Link>
+              {' '}to discover how EmviApp helps you find top artists, boost your reputation, and grow your value.
+            </p>
+          </motion.div>
+
           {/* Bottom Section */}
           <motion.div 
             className="pt-8 border-t border-white/20"
