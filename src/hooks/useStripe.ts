@@ -89,6 +89,11 @@ export function useStripe() {
         numberOfTables: formData.numberOfTables ? Number(formData.numberOfTables) : null,
         numberOfChairs: formData.numberOfChairs ? Number(formData.numberOfChairs) : null,
         squareFeet: formData.squareFeet ? Number(formData.squareFeet) : null,
+        // NOTE: Edge schema requires valid URL when provided; empty strings must be omitted.
+        // Convert "" → undefined so zod.optional().nullable() + .url() do not fail on empty input.
+        virtualTourUrl: (typeof formData.virtualTourUrl === "string" && formData.virtualTourUrl.trim() === "")
+          ? undefined
+          : formData.virtualTourUrl?.trim(),
       };
       
       if (isDebugMode) {
