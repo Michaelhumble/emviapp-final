@@ -120,6 +120,12 @@ const FiveStarReviews = lazy(() => import("@/pages/blog/5-star-reviews"));
 const SalonMarketing2025 = lazy(() => import("@/pages/blog/salon-marketing-2025"));
 const NailArtistsBestJobs = lazy(() => import("@/pages/blog/nail-artists-best-jobs"));
 
+// Pillar Posts (2025)
+const GrowNailSalonEmviApp = lazy(() => import("@/pages/blog/grow-nail-salon-emviapp"));
+const VietnameseSalonSuccessStories = lazy(() => import("@/pages/blog/vietnamese-salon-success-stories"));
+const WhyNailTechsChooseEmviApp = lazy(() => import("@/pages/blog/why-nail-techs-choose-emviapp"));
+const PricingPostingReviewsSellFast = lazy(() => import("@/pages/blog/pricing-posting-reviews-sell-fast"));
+
 // Latest SEO Articles (2025)
 const NailSalonHiringCrisis2025 = lazy(() => import("@/pages/blog/nail-salon-hiring-crisis-2025"));
 const TopCitiesNailTechnicians2025 = lazy(() => import("@/pages/blog/top-10-cities-nail-technicians-2025"));
@@ -439,12 +445,18 @@ function App() {
                      <Route path="/blog/hire-nail-technicians-interview-questions" element={<Layout><HireNailTechniciansInterviewQuestions /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     
-                    {/* SEO Content Hub Posts */}
-                    <Route path="/blog/nail-salon-growth-2025" element={<Layout><NailSalonGrowth2025 /></Layout>} />
-                    <Route path="/blog/hiring-nail-artists" element={<Layout><HiringNailArtists /></Layout>} />
-                    <Route path="/blog/5-star-reviews" element={<Layout><FiveStarReviews /></Layout>} />
-                    <Route path="/blog/salon-marketing-2025" element={<Layout><SalonMarketing2025 /></Layout>} />
-                    <Route path="/blog/nail-artists-best-jobs" element={<Layout><NailArtistsBestJobs /></Layout>} />
+                     {/* SEO Content Hub Posts */}
+                     <Route path="/blog/nail-salon-growth-2025" element={<Layout><NailSalonGrowth2025 /></Layout>} />
+                     <Route path="/blog/hiring-nail-artists" element={<Layout><HiringNailArtists /></Layout>} />
+                     <Route path="/blog/5-star-reviews" element={<Layout><FiveStarReviews /></Layout>} />
+                     <Route path="/blog/salon-marketing-2025" element={<Layout><SalonMarketing2025 /></Layout>} />
+                     <Route path="/blog/nail-artists-best-jobs" element={<Layout><NailArtistsBestJobs /></Layout>} />
+                     
+                     {/* Pillar Posts - 2025 */}
+                     <Route path="/blog/grow-nail-salon-emviapp" element={<Layout><GrowNailSalonEmviApp /></Layout>} />
+                     <Route path="/blog/vietnamese-salon-success-stories" element={<Layout><VietnameseSalonSuccessStories /></Layout>} />
+                     <Route path="/blog/why-nail-techs-choose-emviapp" element={<Layout><WhyNailTechsChooseEmviApp /></Layout>} />
+                     <Route path="/blog/pricing-posting-reviews-sell-fast" element={<Layout><PricingPostingReviewsSellFast /></Layout>} />
                     
                      {/* Latest SEO Articles (2025) */}
                      <Route path="/blog/nail-salon-hiring-crisis-2025" element={<Layout><NailSalonHiringCrisis2025 /></Layout>} />

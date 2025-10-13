@@ -1,24 +1,38 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Calendar, Clock, User, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import BaseSEO from '@/components/seo/BaseSEO';
+import { Helmet } from 'react-helmet-async';
 import { buildBreadcrumbJsonLd, buildArticleJsonLd } from '@/components/seo/jsonld';
 import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
 import { getArticlesByCategory, getAllCategories } from '@/data/blogArticles';
 import BlogImage from '@/components/blog/BlogImage';
 
+const POSTS_PER_PAGE = 12;
+
 const DynamicBlogCategory = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
   
   // Get articles for this category
-  const articles = categorySlug ? getArticlesByCategory(categorySlug) : [];
+  const allArticles = categorySlug ? getArticlesByCategory(categorySlug) : [];
   const allCategories = getAllCategories();
   const currentCategory = allCategories.find(cat => cat.slug === categorySlug);
   
+  // Pagination logic
+  const totalPages = Math.ceil(allArticles.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const articles = allArticles.slice(startIndex, endIndex);
+  
+  const prevPage = currentPage > 1 ? currentPage - 1 : null;
+  const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+  
   // If category doesn't exist or has no articles, redirect to blog
-  if (!currentCategory || articles.length === 0) {
+  if (!currentCategory || allArticles.length === 0) {
     return (
       <>
         <BaseSEO 
@@ -139,13 +153,22 @@ const DynamicBlogCategory = () => {
       }))
     };
   };
+  
+  const canonicalUrl = currentPage === 1 
+    ? `https://www.emvi.app/blog/categories/${categorySlug}` 
+    : `https://www.emvi.app/blog/categories/${categorySlug}?page=${currentPage}`;
 
   return (
     <>
+      <Helmet>
+        {prevPage && <link rel="prev" href={`https://www.emvi.app/blog/categories/${categorySlug}?page=${prevPage}`} />}
+        {nextPage && <link rel="next" href={`https://www.emvi.app/blog/categories/${categorySlug}?page=${nextPage}`} />}
+      </Helmet>
+      
       <BaseSEO 
-        title={`${currentCategory.name} | Beauty Industry Blog - EmviApp`}
+        title={currentPage === 1 ? `${currentCategory.name} | Beauty Industry Blog - EmviApp` : `${currentCategory.name} - Page ${currentPage} | EmviApp`}
         description={`Explore ${currentCategory.name.toLowerCase()} articles and expert insights for beauty professionals. Get the latest tips, trends, and strategies from industry experts.`}
-        canonical={`https://www.emvi.app/blog/categories/${categorySlug}`}
+        canonical={canonicalUrl}
         type="website"
         jsonLd={[
           buildBreadcrumbJsonLd([
@@ -204,7 +227,7 @@ const DynamicBlogCategory = () => {
             </p>
             <div className={`inline-flex items-center gap-2 ${categoryStyle.bg} border border-opacity-20 rounded-full px-4 py-2`}>
               <span className={`${categoryStyle.color} font-medium`}>
-                {articles.length} Article{articles.length !== 1 ? 's' : ''}
+                {allArticles.length} Article{allArticles.length !== 1 ? 's' : ''}
               </span>
             </div>
           </div>
@@ -256,6 +279,66 @@ const DynamicBlogCategory = () => {
               </Link>
             ))}
           </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-12 flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={!prevPage}
+                onClick={() => {
+                  if (prevPage) {
+                    setSearchParams(prevPage === 1 ? {} : { page: prevPage.toString() });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="gap-2"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => {
+                      setSearchParams(page === 1 ? {} : { page: page.toString() });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="min-w-[48px]"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={!nextPage}
+                onClick={() => {
+                  if (nextPage) {
+                    setSearchParams({ page: nextPage.toString() });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="gap-2"
+              >
+                Next
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+          )}
+          
+          {totalPages > 1 && (
+            <p className="text-center text-muted-foreground mt-6">
+              Page {currentPage} of {totalPages} ({allArticles.length} total articles)
+            </p>
+          )}
         </Container>
       </div>
     </>

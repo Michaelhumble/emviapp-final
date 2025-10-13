@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, TrendingUp, Star, Users, Calendar, ArrowRight, Sparkles, BarChart3, Award, Building2, Palette, Trophy } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Search, TrendingUp, Star, Users, Calendar, ArrowRight, Sparkles, BarChart3, Award, Building2, Palette, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import { Helmet } from 'react-helmet-async';
 import viralHeroImage from '@/assets/viral-article-hero-new.jpg';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
 import LazyBlogSection from '@/components/blog/LazyBlogSection';
@@ -17,14 +18,19 @@ import {
   getAllTags 
 } from '@/data/blogArticles';
 
+const POSTS_PER_PAGE = 12;
+
 const BlogLanding = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
-  const recentArticles = getRecentArticles().sort((a, b) => {
+  const allRecentArticles = getRecentArticles().sort((a, b) => {
     // First sort by pinned status, then by date
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -32,6 +38,13 @@ const BlogLanding = () => {
   });
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
+  
+  // Pagination logic
+  const totalPages = Math.ceil(allRecentArticles.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const paginatedArticles = allRecentArticles.slice(startIndex, endIndex);
+  const recentArticles = paginatedArticles;
   
   // Always feature the newest article as hero (first in recentArticles array)
   const heroArticle = recentArticles[0] || {
@@ -89,12 +102,25 @@ const BlogLanding = () => {
     }
   };
 
+  const canonicalUrl = currentPage === 1 
+    ? 'https://www.emvi.app/blog' 
+    : `https://www.emvi.app/blog?page=${currentPage}`;
+  
+  const prevPage = currentPage > 1 ? currentPage - 1 : null;
+  const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+
   return (
     <>
+      <Helmet>
+        {prevPage && <link rel="prev" href={`https://www.emvi.app/blog?page=${prevPage}`} />}
+        {nextPage && <link rel="next" href={`https://www.emvi.app/blog?page=${nextPage}`} />}
+      </Helmet>
+      
       <DynamicSEO
-        title="EmviApp Blog - Beauty Industry Insights & Tips"
+        title={currentPage === 1 ? "EmviApp Blog - Beauty Industry Insights & Tips" : `EmviApp Blog - Page ${currentPage}`}
         description="Discover the latest beauty industry trends, salon management tips, artist spotlights, and success stories. Expert insights for beauty professionals."
-        url="https://www.emvi.app/blog"
+        url={canonicalUrl}
+        canonicalUrl={canonicalUrl}
         type="website"
         image="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
         structuredData={{
@@ -102,13 +128,13 @@ const BlogLanding = () => {
           "@type": "Blog",
           "name": "EmviApp Blog",
           "description": "Beauty industry insights, salon management tips, and success stories",
-          "url": "https://emvi.app/blog",
+          "url": "https://www.emvi.app/blog",
           "publisher": {
             "@type": "Organization",
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emvi.app/logo.png"
+              "url": "https://www.emvi.app/logo.png"
             }
           }
         }}
@@ -324,6 +350,65 @@ const BlogLanding = () => {
           />
         )}
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Container className="py-12">
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={!prevPage}
+                onClick={() => {
+                  if (prevPage) {
+                    setSearchParams(prevPage === 1 ? {} : { page: prevPage.toString() });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="gap-2"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => {
+                      setSearchParams(page === 1 ? {} : { page: page.toString() });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="min-w-[48px]"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={!nextPage}
+                onClick={() => {
+                  if (nextPage) {
+                    setSearchParams({ page: nextPage.toString() });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="gap-2"
+              >
+                Next
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+            
+            <p className="text-center text-muted-foreground mt-6">
+              Page {currentPage} of {totalPages} ({allRecentArticles.length} total articles)
+            </p>
+          </Container>
+        )}
 
         {/* Newsletter Signup */}
         <Container className="py-16">
