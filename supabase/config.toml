@@ -135,3 +135,11 @@ verify_jwt = false
 
 [functions.artists-sitemap]
 verify_jwt = false
+
+[functions.seo-reindex-cron]
+verify_jwt = false
+
+# SEO Reindex Cron Schedule - Every 2 hours
+[[edge_runtime.cron]]
+function = "seo-reindex-cron"
+schedule = "0 */2 * * *"

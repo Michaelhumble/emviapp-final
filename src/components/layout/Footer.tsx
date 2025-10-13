@@ -4,6 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Facebook, Instagram, Linkedin, Heart, Star, Sparkles, Users, Award, Globe } from 'lucide-react';
+import PopularLinks from './PopularLinks';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -358,6 +359,9 @@ const Footer: React.FC = () => {
               {' '}to discover how EmviApp helps you find top artists, boost your reputation, and grow your value.
             </p>
           </motion.div>
+
+          {/* Popular Links for SEO */}
+          <PopularLinks />
 
           {/* Bottom Section */}
           <motion.div 

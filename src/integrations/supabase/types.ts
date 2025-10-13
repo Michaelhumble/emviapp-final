@@ -4810,6 +4810,39 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_reindex_queue: {
+        Row: {
+          created_at: string
+          hash: string | null
+          lastmod: string
+          status: string
+          tries: number
+          type: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          hash?: string | null
+          lastmod?: string
+          status?: string
+          tries?: number
+          type: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          hash?: string | null
+          lastmod?: string
+          status?: string
+          tries?: number
+          type?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string | null

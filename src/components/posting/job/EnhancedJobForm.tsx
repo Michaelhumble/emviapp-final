@@ -394,6 +394,18 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', insertData[0]);
       setFreeJobSuccess(true);
 
+      // Enqueue for SEO reindexing (non-blocking)
+      try {
+        const createdJob = insertData[0];
+        const { enqueueForReindex } = await import('@/utils/seo/queue');
+        const { hashJob } = await import('@/utils/seo/hash');
+        const jobUrl = `https://www.emvi.app/jobs/${createdJob.id}`;
+        const hash = hashJob(createdJob);
+        enqueueForReindex({ url: jobUrl, type: 'job', hash }).catch(console.error);
+      } catch (e) {
+        console.log('SEO enqueue failed (non-blocking):', e);
+      }
+
       // Notify Google Indexing API about the new job (non-blocking)
       try {
         const createdJob = insertData[0];
