@@ -4,12 +4,13 @@
 export async function indexNow(urls: string[]) {
   try {
     const key = (globalThis as any)?.process?.env?.INDEXNOW_KEY || (globalThis as any)?.Deno?.env?.get?.('INDEXNOW_KEY');
+    const keyLocation = (globalThis as any)?.process?.env?.INDEXNOW_KEY_LOCATION || (globalThis as any)?.Deno?.env?.get?.('INDEXNOW_KEY_LOCATION') || 'https://www.emvi.app/indexnow.txt';
     if (!key || !Array.isArray(urls) || urls.length === 0) return;
 
     const body = {
       host: 'www.emvi.app',
       key,
-      keyLocation: 'https://www.emvi.app/indexnow.txt',
+      keyLocation,
       urlList: urls
     };
 
