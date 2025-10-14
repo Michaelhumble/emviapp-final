@@ -12,6 +12,14 @@ import {
 } from '@/components/affiliates';
 import Testimonials from '@/components/affiliates/Testimonials';
 import FinalCTA from '@/components/affiliates/FinalCTA';
+import LiveStatsBar from '@/components/affiliates/LiveStatsBar';
+import TrustBadges from '@/components/affiliates/TrustBadges';
+import ComparisonTable from '@/components/affiliates/ComparisonTable';
+import StickyCTA from '@/components/affiliates/StickyCTA';
+import LiveActivityFeed from '@/components/affiliates/LiveActivityFeed';
+import TierShowcase from '@/components/affiliates/TierShowcase';
+import ExitIntentModal from '@/components/affiliates/ExitIntentModal';
+import LogoWall from '@/components/affiliates/LogoWall';
 
 const AffiliatesLanding = () => {
   useEffect(() => {
@@ -74,14 +82,22 @@ const AffiliatesLanding = () => {
       </Helmet>
       
       <Layout>
+        <LiveStatsBar />
         <AffiliateHero />
+        <TrustBadges />
+        <LogoWall />
         <ValuePropsSection />
+        <ComparisonTable />
         <EarningsCalculator />
         <HowItWorksSection />
+        <TierShowcase />
         <SocialProofSection />
         <Testimonials />
         <FAQSection />
         <FinalCTA />
+        <StickyCTA />
+        <LiveActivityFeed />
+        <ExitIntentModal />
       </Layout>
     </>
   );
