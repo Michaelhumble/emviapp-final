@@ -79,18 +79,18 @@ const Testimonials = () => {
         >
           <div className="inline-flex flex-wrap items-center justify-center gap-6 text-sm text-[hsl(var(--ink-600))]">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>1,247+ Active Affiliates</span>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="font-semibold">1,247+ Active Affiliates</span>
             </div>
             <div className="hidden sm:block w-px h-4 bg-black/10"></div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>$2.4M+ Paid Out</span>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="font-semibold">$2.4M+ Paid Out</span>
             </div>
             <div className="hidden sm:block w-px h-4 bg-black/10"></div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>99.9% Uptime</span>
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+              <span className="font-semibold">99.9% Uptime</span>
             </div>
           </div>
         </motion.div>
