@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import PremiumBackground from './PremiumBackground';
 import { prefersReducedMotion } from '@/utils/featureFlags';
@@ -55,27 +56,31 @@ const AffiliateHero = () => {
             transition={{ duration: reduced ? 0 : 0.8, delay: reduced ? 0 : 0.4 }}
             className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <button
+            <Link
+              to="/affiliate/apply"
               className="group relative rounded-xl px-6 py-4 font-medium text-white min-w-[160px] h-12
                          bg-gradient-to-r from-violet-600 to-fuchsia-500
                          shadow-lg shadow-fuchsia-500/20
                          focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2
-                         transition-transform motion-safe:hover:-translate-y-0.5 touch-manipulation"
+                         transition-transform motion-safe:hover:-translate-y-0.5 touch-manipulation
+                         flex items-center justify-center"
             >
               <span className="relative">Join Now</span>
               <span className="pointer-events-none absolute inset-0 rounded-xl
                                opacity-0 group-hover:opacity-100 transition
                                bg-white/10" />
-            </button>
+            </Link>
 
-            <button
+            <a
+              href="#how-it-works"
               className="rounded-xl px-6 py-4 font-medium min-w-[160px] h-12
                          border border-black/10 bg-white/70 backdrop-blur-md
                          text-[hsl(var(--ink-900))]
-                         focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 touch-manipulation"
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 touch-manipulation
+                         flex items-center justify-center"
             >
               How it works
-            </button>
+            </a>
           </motion.div>
 
           {/* Trust Row */}
