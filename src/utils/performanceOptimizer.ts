@@ -86,13 +86,29 @@ export const measurePerformance = (): Promise<PerformanceMetrics> => {
 };
 
 // Advanced image optimization with multiple formats
-export const generateSrcSet = (src: string, sizes: number[] = [320, 640, 768, 1024, 1280, 1600]): string => {
+export const generateSrcSet = (src: string, sizes: number[] = [400, 600, 800, 1200]): string => {
   if (src.includes('unsplash.com')) {
     return sizes.map(size => `${src}&w=${size}&q=80&auto=format ${size}w`).join(', ');
   }
   
-  if (src.includes('supabase.co')) {
-    return sizes.map(size => `${src}?width=${size}&quality=80 ${size}w`).join(', ');
+  // Optimized srcSet for Supabase storage with render API
+  if (src.includes('supabase.co/storage')) {
+    try {
+      const match = src.match(/\/storage\/v1\/object\/public\/(.+)/);
+      if (!match) return src;
+
+      const path = match[1].split('?')[0]; // Remove any existing query params
+      const baseUrl = src.split('/storage/v1/object/public/')[0];
+      
+      return sizes
+        .map(size => {
+          const qual = size <= 600 ? 70 : 75; // Lower quality for smaller images
+          return `${baseUrl}/storage/v1/render/image/public/${path}?width=${size}&quality=${qual}&format=webp ${size}w`;
+        })
+        .join(', ');
+    } catch (e) {
+      return src;
+    }
   }
 
   return src;
@@ -107,7 +123,7 @@ export const generateOptimizedImageUrl = (config: {
   height?: number;
   priority?: boolean;
 }): string => {
-  const { src, quality = 85, format = 'webp', width, height } = config;
+  const { src, quality = 75, format = 'webp', width = 800, height } = config;
   
   if (src.includes('unsplash.com')) {
     const url = new URL(src);
@@ -119,13 +135,22 @@ export const generateOptimizedImageUrl = (config: {
     return url.toString();
   }
 
-  if (src.includes('supabase.co')) {
-    const url = new URL(src);
-    url.searchParams.set('quality', quality.toString());
-    url.searchParams.set('format', format);
-    if (width) url.searchParams.set('width', width.toString());
-    if (height) url.searchParams.set('height', height.toString());
-    return url.toString();
+  // Optimized Supabase storage image transformation
+  if (src.includes('supabase.co/storage')) {
+    try {
+      // Extract path after /storage/v1/object/public/
+      const match = src.match(/\/storage\/v1\/object\/public\/(.+)/);
+      if (!match) return src;
+
+      const path = match[1];
+      const baseUrl = src.split('/storage/v1/object/public/')[0];
+      
+      // Use Supabase's image transformation API for MASSIVE performance boost
+      return `${baseUrl}/storage/v1/render/image/public/${path}?width=${width}&quality=${quality}&format=${format}`;
+    } catch (e) {
+      console.error('Error optimizing Supabase URL:', e);
+      return src;
+    }
   }
 
   return src;
@@ -279,14 +304,15 @@ const trackResourceTiming = (): void => {
   if ('PerformanceObserver' in window) {
     const resourceObserver = new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
-        if (entry.duration > 1000) { // Resources taking longer than 1s
-          console.warn(`⚠️ Slow resource: ${entry.name} (${entry.duration}ms)`);
+        // Only warn about VERY slow resources (>5s) to reduce console noise
+        if (entry.duration > 5000) {
+          console.warn(`🚨 CRITICAL: Slow resource: ${entry.name} (${entry.duration}ms)`);
         }
         
-        // Track specific resource types
-        if (entry.name.includes('.js') || entry.name.includes('.css')) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`📦 ${entry.name.split('/').pop()}: ${entry.duration}ms`);
+        // Track specific resource types in development only
+        if (process.env.NODE_ENV === 'development') {
+          if (entry.duration > 2000 && (entry.name.includes('.js') || entry.name.includes('.css'))) {
+            console.log(`📦 Slow bundle: ${entry.name.split('/').pop()}: ${entry.duration}ms`);
           }
         }
       });

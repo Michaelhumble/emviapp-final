@@ -57,10 +57,10 @@ export const PerformanceProvider: React.FC<PerformanceProviderProps> = ({ childr
     initPerformanceOptimizations();
     
     // Measure initial performance
-    setTimeout(updateMetrics, 1000);
+    setTimeout(updateMetrics, 2000);
     
-    // Set up periodic monitoring - reduced frequency to prevent scroll jumping
-    const interval = setInterval(updateMetrics, 300000); // Every 5 minutes
+    // Set up periodic monitoring - reduced frequency to prevent performance overhead
+    const interval = setInterval(updateMetrics, 600000); // Every 10 minutes
     
     return () => clearInterval(interval);
   }, []);

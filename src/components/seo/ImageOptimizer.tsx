@@ -86,7 +86,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     src: imgSrc,
     quality,
     format: 'webp',
-    priority
+    priority,
+    width: 800 // Default width for optimization
   });
 
   const imageProps = {

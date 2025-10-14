@@ -31,14 +31,28 @@ export const generateOptimizedImageUrl = (
     return url.toString();
   }
   
-  // For Supabase storage
+  // For Supabase storage - use render API for MASSIVE performance boost
   if (src.includes('supabase.co/storage')) {
-    const url = new URL(src);
-    if (finalConfig.width) url.searchParams.set('width', finalConfig.width.toString());
-    if (finalConfig.height) url.searchParams.set('height', finalConfig.height.toString());
-    url.searchParams.set('quality', finalConfig.quality.toString());
-    url.searchParams.set('format', finalConfig.format);
-    return url.toString();
+    try {
+      // Extract path after /storage/v1/object/public/
+      const match = src.match(/\/storage\/v1\/object\/public\/(.+)/);
+      if (!match) return src;
+
+      const path = match[1].split('?')[0]; // Remove existing params
+      const baseUrl = src.split('/storage/v1/object/public/')[0];
+      
+      // Use Supabase's image transformation API
+      const params = new URLSearchParams();
+      if (finalConfig.width) params.set('width', finalConfig.width.toString());
+      if (finalConfig.height) params.set('height', finalConfig.height.toString());
+      params.set('quality', finalConfig.quality.toString());
+      params.set('format', finalConfig.format);
+      
+      return `${baseUrl}/storage/v1/render/image/public/${path}?${params.toString()}`;
+    } catch (e) {
+      console.error('Error optimizing Supabase image:', e);
+      return src;
+    }
   }
   
   return src;
@@ -47,15 +61,36 @@ export const generateOptimizedImageUrl = (
 // Generate responsive srcset
 export const generateResponsiveSrcSet = (
   src: string,
-  sizes: number[] = [320, 640, 768, 1024, 1280, 1600],
+  sizes: number[] = [400, 600, 800, 1200, 1600],
   format: 'webp' | 'avif' | 'jpeg' = 'webp'
 ): string => {
+  // Optimize for Supabase storage
+  if (src.includes('supabase.co/storage')) {
+    try {
+      const match = src.match(/\/storage\/v1\/object\/public\/(.+)/);
+      if (!match) return src;
+
+      const path = match[1].split('?')[0];
+      const baseUrl = src.split('/storage/v1/object/public/')[0];
+      
+      return sizes
+        .map(size => {
+          const quality = size <= 600 ? 70 : size <= 1200 ? 75 : 80;
+          return `${baseUrl}/storage/v1/render/image/public/${path}?width=${size}&quality=${quality}&format=${format} ${size}w`;
+        })
+        .join(', ');
+    } catch (e) {
+      return src;
+    }
+  }
+  
+  // For other image sources
   return sizes
     .map(size => {
       const optimizedUrl = generateOptimizedImageUrl(src, {
         width: size,
         format,
-        quality: size <= 640 ? 80 : 85 // Lower quality for smaller images
+        quality: size <= 640 ? 80 : 85
       });
       return `${optimizedUrl} ${size}w`;
     })
@@ -92,7 +127,15 @@ export const preloadCriticalImages = (images: string[]) => {
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'image';
-      link.href = generateOptimizedImageUrl(src, { width: 800, format: 'webp' });
+      
+      // Optimize Supabase images before preloading
+      if (src.includes('supabase.co/storage')) {
+        link.href = generateOptimizedImageUrl(src, { width: 1200, format: 'webp', quality: 75 });
+      } else {
+        link.href = generateOptimizedImageUrl(src, { width: 800, format: 'webp' });
+      }
+      
+      link.fetchPriority = 'high';
       document.head.appendChild(link);
     }
   });
