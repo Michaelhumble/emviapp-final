@@ -23,12 +23,12 @@ const UngDungTotNhatChoNguoiVietTimViecNail = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject", 
-        "url": "https://emvi.app/icons/emvi-master-512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail"
+      "@id": "https://www.emvi.app/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail"
     }
   };
 

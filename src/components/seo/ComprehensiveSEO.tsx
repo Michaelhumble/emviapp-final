@@ -43,26 +43,8 @@ const ComprehensiveSEO: React.FC<ComprehensiveSEOProps> = ({
   // Generate absolute image URL
   const absoluteImageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
   
-  // Generate Organization structured data for all pages
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "EmviApp",
-    "url": baseUrl,
-    "logo": `${baseUrl}/icons/emvi-master-512.png`,
-    "sameAs": [
-      "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
-      "https://twitter.com/EmviApp",
-      "https://www.linkedin.com/company/emviapp/"
-    ],
-    "description": "AI-powered platform connecting salons, beauty professionals, and customers through intelligent technology",
-    "founder": {
-      "@type": "Person",
-      "name": "Michael Humble"
-    },
-    "foundingDate": "2025",
-    "industry": "Beauty and Personal Care Technology"
-  };
+  // NOTE: Organization schema is now provided by GlobalSEOInjection (site-wide)
+  // to avoid JSON-LD duplication. Removed from here.
 
   // Generate breadcrumb structured data if breadcrumbs are provided
   const breadcrumbSchema = breadcrumbs.length > 0 ? {
@@ -76,9 +58,8 @@ const ComprehensiveSEO: React.FC<ComprehensiveSEOProps> = ({
     }))
   } : null;
 
-  // Combine all structured data
+  // Combine all structured data (Organization schema now in GlobalSEOInjection only)
   const allStructuredData = [
-    organizationSchema,
     ...(breadcrumbSchema ? [breadcrumbSchema] : []),
     ...structuredData
   ];

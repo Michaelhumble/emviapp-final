@@ -23,12 +23,12 @@ const Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emvi.app/icons/emvi-master-512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung"
+      "@id": "https://www.emvi.app/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung"
     }
   };
 

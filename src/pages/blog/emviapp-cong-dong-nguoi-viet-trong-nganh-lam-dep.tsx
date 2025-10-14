@@ -23,12 +23,12 @@ const EmviAppCongDongNguoiVietTrongNganhLamDep = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emvi.app/icons/emvi-master-512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep"
+      "@id": "https://www.emvi.app/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep"
     }
   };
 

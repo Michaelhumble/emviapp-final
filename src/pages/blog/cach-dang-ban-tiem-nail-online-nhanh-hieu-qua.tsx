@@ -23,12 +23,12 @@ const CachDangBanTiemNailOnlineNhanhHieuQua = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject", 
-        "url": "https://emvi.app/icons/emvi-master-512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua"
+      "@id": "https://www.emvi.app/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua"
     }
   };
 

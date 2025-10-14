@@ -57,9 +57,7 @@ const Index = () => {
     userId
   } = useRoleSelection();
   
-  // Generate server-side JSON-LD
-  const organizationSchema = organizationJsonLd();
-  const websiteSchema = websiteJsonLd();
+  // Generate server-side JSON-LD (Organization + WebSite now in GlobalSEOInjection)
   const localBusinessSchema = marketplaceLocalBusinessJsonLd();
   
   useEffect(() => {
@@ -75,14 +73,7 @@ const Index = () => {
   return (
     <Layout>
       <Helmet>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-        />
+        {/* Organization + WebSite schemas now in GlobalSEOInjection (site-wide) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

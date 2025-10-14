@@ -19,7 +19,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - The Beauty Industry\'s Missing Piece',
   description = 'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.',
   image = '/emvi-heart-og.png',
-  url = 'https://emvi.app',
+  url = 'https://www.emvi.app',
   type = 'website',
   author,
   publishedTime,

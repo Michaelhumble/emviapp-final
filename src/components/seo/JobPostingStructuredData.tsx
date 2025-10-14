@@ -47,7 +47,7 @@ const JobPostingStructuredData: React.FC<JobPostingStructuredDataProps> = ({
       "@type": "Organization",
       "name": job.company || job.salonName || job.contact_info?.owner_name || "Beauty Salon",
       "sameAs": baseUrl,
-      "logo": `${baseUrl}/emvi-heart-og.png`
+      "logo": `${baseUrl}/icons/emvi-master-512.png`
     },
     "jobLocation": job.is_remote ? {
       "@type": "Place",

@@ -23,12 +23,12 @@ const BiQuyetTuyenThoNailNhanhChoChuTiemNguoiViet = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emvi.app/icons/emvi-master-512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet"
+      "@id": "https://www.emvi.app/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet"
     }
   };
 

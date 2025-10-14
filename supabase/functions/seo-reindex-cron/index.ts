@@ -88,27 +88,60 @@ async function submitToIndexNow(urls: string[]): Promise<{ success: boolean; sta
 }
 
 /**
- * Ping Google with sitemap updates
+ * Ping Google with sitemap updates (with retry logic and rotation)
+ * Only pings 2 sitemaps per run to avoid rate limiting
  */
 async function pingSitemaps(): Promise<number> {
   let successCount = 0;
   
-  for (const sitemap of SITEMAPS) {
-    try {
-      const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemap)}`;
-      const response = await fetch(pingUrl, { method: 'GET' });
-      
-      if (response.ok) {
-        successCount++;
-      } else {
-        console.warn(`Sitemap ping failed for ${sitemap}: ${response.status}`);
+  // Get current run timestamp to determine which sitemaps to ping
+  const runIndex = Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % 4; // Rotates every 2 hours across 4 batches
+  const sitemapsToProcess = [
+    SITEMAPS.slice(0, 2),    // Batch 0: sitemap.xml, sitemap-static.xml
+    SITEMAPS.slice(2, 4),    // Batch 1: jobs-sitemap.xml, salons-sitemap.xml
+    SITEMAPS.slice(4, 6),    // Batch 2: artists-sitemap.xml, city-sitemap.xml
+    SITEMAPS.slice(6, 7)     // Batch 3: blog-sitemap.xml
+  ][runIndex];
+  
+  console.log(`📍 Pinging sitemaps batch ${runIndex}: ${sitemapsToProcess.length} sitemaps`);
+  
+  for (const sitemap of sitemapsToProcess) {
+    let retries = 0;
+    const maxRetries = 3;
+    let success = false;
+    
+    while (retries < maxRetries && !success) {
+      try {
+        const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemap)}`;
+        const response = await fetch(pingUrl, { 
+          method: 'GET',
+          headers: {
+            'User-Agent': 'EmviApp-SEO-Bot/1.0'
+          }
+        });
+        
+        if (response.ok || response.status === 202) {
+          successCount++;
+          success = true;
+          console.log(`✅ Pinged ${sitemap} successfully`);
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        retries++;
+        const delay = Math.min(1000 * Math.pow(2, retries), 8000); // Exponential backoff: 2s, 4s, 8s
+        
+        if (retries < maxRetries) {
+          console.warn(`⚠️ Sitemap ping attempt ${retries} failed for ${sitemap}, retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          console.error(`❌ Sitemap ping failed after ${maxRetries} attempts for ${sitemap}:`, error);
+        }
       }
-    } catch (error) {
-      console.error(`Sitemap ping error for ${sitemap}:`, error);
     }
   }
   
-  console.log(`📍 Sitemap pings: ${successCount}/${SITEMAPS.length} succeeded`);
+  console.log(`📍 Sitemap pings: ${successCount}/${sitemapsToProcess.length} succeeded (batch ${runIndex})`);
   return successCount;
 }
 
