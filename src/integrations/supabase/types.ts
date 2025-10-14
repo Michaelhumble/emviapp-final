@@ -4782,6 +4782,7 @@ export type Database = {
           completed_at: string | null
           errors: Json | null
           id: string
+          metadata: Json | null
           run_date: string
           started_at: string | null
           status: string | null
@@ -4793,6 +4794,7 @@ export type Database = {
           completed_at?: string | null
           errors?: Json | null
           id?: string
+          metadata?: Json | null
           run_date?: string
           started_at?: string | null
           status?: string | null
@@ -4804,6 +4806,7 @@ export type Database = {
           completed_at?: string | null
           errors?: Json | null
           id?: string
+          metadata?: Json | null
           run_date?: string
           started_at?: string | null
           status?: string | null
