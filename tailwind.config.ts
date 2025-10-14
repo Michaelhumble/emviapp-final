@@ -104,7 +104,14 @@ const config: Config = {
       },
       backdropFilter: {
         'luxury': 'blur(20px) saturate(180%)',
-      }
+      },
+      backgroundSize: {
+        '200': '200% 100%',
+      },
+      backgroundPosition: {
+        'pos-0': '0% 50%',
+        'pos-100': '100% 50%',
+      },
     },
   },
   plugins: [

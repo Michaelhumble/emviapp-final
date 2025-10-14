@@ -16,58 +16,58 @@ const ValuePropsSection = () => {
   const { t } = useTranslation();
 
   const valueProps = [
-    {
-      icon: DollarSign,
-      illustration: PayoutIllustration,
-      title: {
-        english: "Real monthly payouts",
-        vietnamese: "Thanh toán hàng tháng thực tế"
-      } as Translation,
-      description: {
-        english: "Get paid monthly via Stripe Connect with transparent reporting",
-        vietnamese: "Được trả lương hàng tháng qua Stripe Connect với báo cáo minh bạch"
-      } as Translation,
-      gradient: "from-green-500/20 to-emerald-500/10"
-    },
-    {
-      icon: TrendingUp,
-      illustration: AnalyticsIllustration,
-      title: {
-        english: "Track clicks & conversions",
-        vietnamese: "Theo dõi lượt nhấp & chuyển đổi"
-      } as Translation,
-      description: {
-        english: "Real-time analytics dashboard with detailed performance metrics",
-        vietnamese: "Bảng điều khiển phân tích thời gian thực với các chỉ số hiệu suất chi tiết"
-      } as Translation,
-      gradient: "from-blue-500/20 to-indigo-500/10"
-    },
-    {
-      icon: Shield,
-      illustration: FreedomIllustration,
-      title: {
-        english: "No lock-in",
-        vietnamese: "Không bị ràng buộc"
-      } as Translation,
-      description: {
-        english: "Join or leave anytime with no minimum commitments required",
-        vietnamese: "Tham gia hoặc rời đi bất kỳ lúc nào mà không cần cam kết tối thiểu"
-      } as Translation,
-      gradient: "from-purple-500/20 to-pink-500/10"
-    },
-    {
-      icon: Users,
-      illustration: CommunityIllustration,
-      title: {
-        english: "Trusted by the community",
-        vietnamese: "Được cộng đồng tin tưởng"
-      } as Translation,
-      description: {
-        english: "Join 500+ creators earning with our transparent affiliate program",
-        vietnamese: "Tham gia cùng 500+ người sáng tạo đang kiếm tiền với chương trình cộng tác viên minh bạch"
-      } as Translation,
-      gradient: "from-orange-500/20 to-red-500/10"
-    }
+      {
+        icon: DollarSign,
+        illustration: PayoutIllustration,
+        title: {
+          english: "Instant monthly payouts",
+          vietnamese: "Thanh toán hàng tháng ngay lập tức"
+        } as Translation,
+        description: {
+          english: "Direct deposits via Stripe Connect. No minimums, no delays, no headaches.",
+          vietnamese: "Thanh toán trực tiếp qua Stripe Connect. Không tối thiểu, không chậm trễ, không phiền phức."
+        } as Translation,
+        gradient: "from-green-500/20 to-emerald-500/10"
+      },
+      {
+        icon: TrendingUp,
+        illustration: AnalyticsIllustration,
+        title: {
+          english: "Real-time transparency",
+          vietnamese: "Minh bạch thời gian thực"
+        } as Translation,
+        description: {
+          english: "Watch your earnings grow with live analytics. Every click, every conversion, crystal clear.",
+          vietnamese: "Xem thu nhập của bạn tăng trưởng với phân tích trực tiếp. Mọi nhấp chuột, mọi chuyển đổi, rõ ràng như pha lê."
+        } as Translation,
+        gradient: "from-blue-500/20 to-indigo-500/10"
+      },
+      {
+        icon: Shield,
+        illustration: FreedomIllustration,
+        title: {
+          english: "Your freedom, your pace",
+          vietnamese: "Tự do của bạn, nhịp độ của bạn"
+        } as Translation,
+        description: {
+          english: "No contracts, no pressure. Partner when it works for you, pause when it doesn't.",
+          vietnamese: "Không hợp đồng, không áp lực. Hợp tác khi phù hợp, tạm dừng khi không."
+        } as Translation,
+        gradient: "from-purple-500/20 to-pink-500/10"
+      },
+      {
+        icon: Users,
+        illustration: CommunityIllustration,
+        title: {
+          english: "Join the movement",
+          vietnamese: "Tham gia phong trào"
+        } as Translation,
+        description: {
+          english: "1,200+ creators already earning. You'll be in great company building something meaningful.",
+          vietnamese: "Hơn 1.200 người sáng tạo đã kiếm tiền. Bạn sẽ ở trong công ty tuyệt vời xây dựng điều gì đó có ý nghĩa."
+        } as Translation,
+        gradient: "from-orange-500/20 to-red-500/10"
+      }
   ];
 
   const containerVariants = {
@@ -99,13 +99,13 @@ const ValuePropsSection = () => {
           transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <h2 className="text-section-title mb-6 md:mb-8 max-w-[22ch] md:max-w-5xl mx-auto">
-            {t({ english: "Why choose our affiliate program?", vietnamese: "Tại sao chọn chương trình cộng tác viên của chúng tôi?" })}
+          <h2 className="text-section-title mb-6 md:mb-8 max-w-[22ch] md:max-w-5xl mx-auto bg-gradient-to-r from-violet-900 via-fuchsia-800 to-purple-900 bg-clip-text text-transparent">
+            {t({ english: "Why beauty pros love partnering with us", vietnamese: "Tại sao chuyên gia làm đẹp yêu thích hợp tác với chúng tôi" })}
           </h2>
-          <p className="text-base md:text-body-large text-muted-foreground max-w-[46ch] md:max-w-4xl mx-auto font-medium">
+          <p className="text-base md:text-body-large text-muted-foreground max-w-[50ch] md:max-w-4xl mx-auto font-medium leading-relaxed">
             {t({ 
-              english: "Join thousands of creators earning real money by promoting the beauty industry's fastest-growing platform",
-              vietnamese: "Tham gia cùng hàng nghìn người sáng tạo đang kiếm tiền thực sự bằng cách quảng bá nền tảng phát triển nhanh nhất trong ngành làm đẹp"
+              english: "Join the movement of creators building real income while supporting beauty professionals nationwide. Transparent, reliable, rewarding.",
+              vietnamese: "Tham gia phong trào người sáng tạo xây dựng thu nhập thực sự trong khi hỗ trợ các chuyên gia làm đẹp trên toàn quốc. Minh bạch, đáng tin cậy, xứng đáng."
             })}
           </p>
         </motion.div>
@@ -192,19 +192,34 @@ const ValuePropsSection = () => {
               <Calculator className="w-12 h-12 md:w-16 md:h-16 text-primary" />
             </div>
             <div className="space-y-4 md:space-y-6">
-              <h3 className="text-2xl md:text-hero-secondary text-gray-900 max-w-[20ch] md:max-w-3xl mx-auto">
-                Calculate Your Potential Earnings
+              <h3 className="text-2xl md:text-hero-secondary text-gray-900 max-w-[22ch] md:max-w-3xl mx-auto font-bold">
+                See Your Potential Earnings in Real-Time
               </h3>
-              <p className="text-base md:text-body-large text-gray-600 max-w-[46ch] md:max-w-4xl mx-auto">
-                See how much you could earn based on your audience and engagement with our sophisticated earnings calculator
+              <p className="text-base md:text-body-large text-gray-600 max-w-[52ch] md:max-w-4xl mx-auto leading-relaxed">
+                Play with our interactive calculator to discover how your unique audience translates to monthly income. The math is simple — your success is inevitable.
               </p>
             </div>
-            <Button 
-              size="lg" 
-              className="btn-magnetic focus-ring-premium text-white h-12 md:h-16 px-8 md:px-12 text-lg md:text-xl font-bold min-w-[200px] md:min-w-[300px] rounded-xl md:rounded-2xl shadow-2xl touch-manipulation"
+            <a 
+              href="#calculator"
+              className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-white
+                         bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600 bg-size-200 bg-pos-0
+                         shadow-xl shadow-violet-500/30
+                         hover:bg-pos-100 hover:shadow-2xl hover:shadow-fuchsia-500/40 hover:scale-105
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2
+                         transition-all duration-300 ease-out relative overflow-hidden"
             >
-              Try Calculator
-            </Button>
+              <span className="relative z-10 text-lg">Try Calculator →</span>
+              
+              {/* Animated glow */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400 
+                              blur opacity-0 group-hover:opacity-70 transition-opacity duration-300" />
+              
+              {/* Shine effect */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
+                                translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              </div>
+            </a>
           </div>
         </motion.div>
       </div>

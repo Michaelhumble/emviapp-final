@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DollarSign, UserPlus, TrendingUp, Award } from 'lucide-react';
+import { DollarSign, UserPlus, TrendingUp, Award, Sparkles } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -55,48 +55,59 @@ const LiveActivityFeed = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-24 right-6 z-40 pointer-events-none">
+    <div className="fixed bottom-24 right-6 md:right-8 z-40 pointer-events-none">
       <AnimatePresence>
         {isVisible && currentActivity && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            initial={{ opacity: 0, y: 50, x: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ 
+              type: 'spring', 
+              stiffness: 260, 
+              damping: 20,
+              opacity: { duration: 0.3 }
+            }}
             className="pointer-events-auto"
           >
-            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl
-                           bg-white/95 backdrop-blur-xl
-                           border border-black/10
-                           shadow-2xl shadow-black/20
-                           min-w-[280px]">
-              {/* Icon */}
-              <div className={`shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${currentActivity.color} 
-                             flex items-center justify-center shadow-lg`}>
-                <currentActivity.icon className="w-5 h-5 text-white" />
-              </div>
+            <motion.div 
+              className="relative bg-gradient-to-br from-white via-white to-violet-50/50 backdrop-blur-xl 
+                         border-2 border-violet-200/50 rounded-2xl shadow-2xl p-5 overflow-hidden min-w-[300px]"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5 opacity-50" />
+              
+              <div className="flex items-start gap-4 relative z-10">
+                {/* Icon */}
+                <div className={`shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${currentActivity.color} 
+                               flex items-center justify-center shadow-lg relative`}>
+                  <currentActivity.icon className="w-6 h-6 text-white" />
+                  <div className="absolute -top-1 -right-1">
+                    <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
+                  </div>
+                </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[hsl(var(--ink-900))] truncate">
-                  {currentActivity.name}
-                </p>
-                <p className="text-xs text-[hsl(var(--ink-600))] truncate">
-                  {currentActivity.detail}
-                </p>
-              </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-base text-[hsl(var(--ink-900))] truncate">
+                    {currentActivity.name}
+                  </p>
+                  <p className="text-sm text-[hsl(var(--ink-700))] mt-1 font-medium truncate">
+                    {currentActivity.detail}
+                  </p>
+                </div>
 
-              {/* Live indicator */}
-              <div className="shrink-0 flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                </span>
-                <span className="text-xs text-[hsl(var(--ink-600))] font-medium">
-                  Live
-                </span>
+                {/* Live indicator */}
+                <div className="shrink-0 pt-1">
+                  <span className="flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-fuchsia-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-gradient-to-br from-violet-500 to-fuchsia-500"></span>
+                  </span>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

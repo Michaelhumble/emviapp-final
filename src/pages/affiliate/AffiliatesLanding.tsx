@@ -20,6 +20,8 @@ import LiveActivityFeed from '@/components/affiliates/LiveActivityFeed';
 import TierShowcase from '@/components/affiliates/TierShowcase';
 import ExitIntentModal from '@/components/affiliates/ExitIntentModal';
 import LogoWall from '@/components/affiliates/LogoWall';
+import FloatingJoinButton from '@/components/affiliates/FloatingJoinButton';
+import GradientSeparator from '@/components/affiliates/GradientSeparator';
 
 const AffiliatesLanding = () => {
   useEffect(() => {
@@ -84,17 +86,27 @@ const AffiliatesLanding = () => {
       <Layout>
         <LiveStatsBar />
         <AffiliateHero />
+        <GradientSeparator />
+        <ValuePropsSection />
+        <GradientSeparator />
+        <div id="calculator">
+          <EarningsCalculator />
+        </div>
+        <GradientSeparator />
+        <ComparisonTable />
+        <GradientSeparator />
+        <Testimonials />
+        <GradientSeparator />
+        <TierShowcase />
         <TrustBadges />
         <LogoWall />
-        <ValuePropsSection />
-        <ComparisonTable />
-        <EarningsCalculator />
-        <HowItWorksSection />
-        <TierShowcase />
+        <div id="how-it-works">
+          <HowItWorksSection />
+        </div>
         <SocialProofSection />
-        <Testimonials />
         <FAQSection />
         <FinalCTA />
+        <FloatingJoinButton />
         <StickyCTA />
         <LiveActivityFeed />
         <ExitIntentModal />
