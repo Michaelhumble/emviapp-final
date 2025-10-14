@@ -1,8 +1,16 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 const BASE_URL = 'https://www.emvi.app';
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -66,18 +74,19 @@ ${urls.map(url => `  <url>
 
     return new Response(xml, {
       headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600'
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+        ...corsHeaders
       },
       status: 200
     });
 
   } catch (error) {
-    console.error('Sitemap generation error:', error);
+    console.error('City sitemap generation error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
         status: 500
       }
     );
