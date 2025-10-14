@@ -136,6 +136,12 @@ verify_jwt = false
 [functions.artists-sitemap]
 verify_jwt = false
 
+[functions.salons-sitemap]
+verify_jwt = false
+
+[functions.city-sitemap]
+verify_jwt = false
+
 [functions.seo-reindex-cron]
 verify_jwt = false
 

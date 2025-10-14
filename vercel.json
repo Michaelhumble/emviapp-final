@@ -87,6 +87,26 @@
       "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/jobs-sitemap/jobs-sitemaps/$1"
     },
     {
+      "source": "/salons-sitemap.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/salons-sitemap"
+    },
+    {
+      "source": "/salons-sitemaps/(.*)",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/salons-sitemap/salons-sitemaps/$1"
+    },
+    {
+      "source": "/artists-sitemap.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/artists-sitemap"
+    },
+    {
+      "source": "/artists-sitemaps/(.*)",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/artists-sitemap/artists-sitemaps/$1"
+    },
+    {
+      "source": "/city-sitemap.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/city-sitemap"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
@@ -122,6 +142,41 @@
       "headers": [
         { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=900, s-maxage=900" }
+      ]
+    },
+    {
+      "source": "/salons-sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/salons-sitemaps/(.*)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/artists-sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/artists-sitemaps/(.*)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/city-sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
     }
   ]
