@@ -203,6 +203,131 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_applications: {
+        Row: {
+          audience_description: string | null
+          audience_size: string | null
+          created_at: string
+          email: string
+          experience_level: string | null
+          full_name: string
+          id: string
+          promotion_channels: Json | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          social_media_links: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+          website_url: string | null
+          why_join: string
+        }
+        Insert: {
+          audience_description?: string | null
+          audience_size?: string | null
+          created_at?: string
+          email: string
+          experience_level?: string | null
+          full_name: string
+          id?: string
+          promotion_channels?: Json | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          social_media_links?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+          why_join: string
+        }
+        Update: {
+          audience_description?: string | null
+          audience_size?: string | null
+          created_at?: string
+          email?: string
+          experience_level?: string | null
+          full_name?: string
+          id?: string
+          promotion_channels?: Json | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          social_media_links?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+          why_join?: string
+        }
+        Relationships: []
+      }
+      affiliate_campaigns: {
+        Row: {
+          affiliate_id: string
+          campaign_name: string
+          campaign_type: string
+          clicks_count: number | null
+          conversion_rate: number | null
+          conversions_count: number | null
+          created_at: string
+          custom_slug: string | null
+          deep_link_path: string
+          expires_at: string | null
+          fallback_url: string | null
+          id: string
+          is_active: boolean | null
+          target_page: string | null
+          updated_at: string
+          utm_params: Json | null
+        }
+        Insert: {
+          affiliate_id: string
+          campaign_name: string
+          campaign_type?: string
+          clicks_count?: number | null
+          conversion_rate?: number | null
+          conversions_count?: number | null
+          created_at?: string
+          custom_slug?: string | null
+          deep_link_path: string
+          expires_at?: string | null
+          fallback_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          target_page?: string | null
+          updated_at?: string
+          utm_params?: Json | null
+        }
+        Update: {
+          affiliate_id?: string
+          campaign_name?: string
+          campaign_type?: string
+          clicks_count?: number | null
+          conversion_rate?: number | null
+          conversions_count?: number | null
+          created_at?: string
+          custom_slug?: string | null
+          deep_link_path?: string
+          expires_at?: string | null
+          fallback_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          target_page?: string | null
+          updated_at?: string
+          utm_params?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_campaigns_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_clicks: {
         Row: {
           affiliate_id: string | null
@@ -311,6 +436,62 @@ export type Database = {
           },
         ]
       }
+      affiliate_fraud_flags: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          description: string
+          evidence: Json | null
+          flag_type: string
+          id: string
+          ip_addresses: Json | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          user_agents: Json | null
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          description: string
+          evidence?: Json | null
+          flag_type: string
+          id?: string
+          ip_addresses?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          user_agents?: Json | null
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          description?: string
+          evidence?: Json | null
+          flag_type?: string
+          id?: string
+          ip_addresses?: Json | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          user_agents?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_fraud_flags_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_links: {
         Row: {
           affiliate_id: string | null
@@ -358,6 +539,68 @@ export type Database = {
           },
         ]
       }
+      affiliate_onboarding: {
+        Row: {
+          affiliate_id: string
+          completed_at: string | null
+          completed_steps: Json | null
+          connected_stripe: boolean | null
+          created_at: string
+          created_first_link: boolean | null
+          current_step: string | null
+          downloaded_assets: boolean | null
+          id: string
+          last_interaction_at: string
+          made_first_promotion: boolean | null
+          progress_percentage: number | null
+          read_guidelines: boolean | null
+          started_at: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          completed_at?: string | null
+          completed_steps?: Json | null
+          connected_stripe?: boolean | null
+          created_at?: string
+          created_first_link?: boolean | null
+          current_step?: string | null
+          downloaded_assets?: boolean | null
+          id?: string
+          last_interaction_at?: string
+          made_first_promotion?: boolean | null
+          progress_percentage?: number | null
+          read_guidelines?: boolean | null
+          started_at?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          completed_at?: string | null
+          completed_steps?: Json | null
+          connected_stripe?: boolean | null
+          created_at?: string
+          created_first_link?: boolean | null
+          current_step?: string | null
+          downloaded_assets?: boolean | null
+          id?: string
+          last_interaction_at?: string
+          made_first_promotion?: boolean | null
+          progress_percentage?: number | null
+          read_guidelines?: boolean | null
+          started_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_onboarding_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: true
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_partners: {
         Row: {
           approved_at: string | null
@@ -365,9 +608,15 @@ export type Database = {
           connect_status: string | null
           country: string | null
           created_at: string | null
+          current_tier: string | null
           default_currency: string | null
+          fraud_score: number | null
           id: string
+          is_flagged: boolean | null
           last_connect_check: string | null
+          last_tier_check: string | null
+          monthly_conversions: number | null
+          onboarding_completed: boolean | null
           slug: string
           status: string | null
           stripe_account_id: string | null
@@ -384,9 +633,15 @@ export type Database = {
           connect_status?: string | null
           country?: string | null
           created_at?: string | null
+          current_tier?: string | null
           default_currency?: string | null
+          fraud_score?: number | null
           id?: string
+          is_flagged?: boolean | null
           last_connect_check?: string | null
+          last_tier_check?: string | null
+          monthly_conversions?: number | null
+          onboarding_completed?: boolean | null
           slug: string
           status?: string | null
           stripe_account_id?: string | null
@@ -403,9 +658,15 @@ export type Database = {
           connect_status?: string | null
           country?: string | null
           created_at?: string | null
+          current_tier?: string | null
           default_currency?: string | null
+          fraud_score?: number | null
           id?: string
+          is_flagged?: boolean | null
           last_connect_check?: string | null
+          last_tier_check?: string | null
+          monthly_conversions?: number | null
+          onboarding_completed?: boolean | null
           slug?: string
           status?: string | null
           stripe_account_id?: string | null
@@ -416,7 +677,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_partners_current_tier_fkey"
+            columns: ["current_tier"]
+            isOneToOne: false
+            referencedRelation: "affiliate_tiers"
+            referencedColumns: ["name"]
+          },
+        ]
       }
       affiliate_payouts: {
         Row: {
@@ -464,6 +733,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      affiliate_tiers: {
+        Row: {
+          badge_color: string | null
+          commission_rate: number
+          created_at: string
+          id: string
+          min_conversions: number
+          name: string
+          perks: Json | null
+          priority_support: boolean | null
+        }
+        Insert: {
+          badge_color?: string | null
+          commission_rate: number
+          created_at?: string
+          id?: string
+          min_conversions?: number
+          name: string
+          perks?: Json | null
+          priority_support?: boolean | null
+        }
+        Update: {
+          badge_color?: string | null
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          min_conversions?: number
+          name?: string
+          perks?: Json | null
+          priority_support?: boolean | null
+        }
+        Relationships: []
       }
       ai_recommendations: {
         Row: {
@@ -5733,6 +6035,10 @@ export type Database = {
       award_tip_credits: {
         Args: { p_amount: number; p_transaction_id: string; p_user_id: string }
         Returns: boolean
+      }
+      calculate_fraud_score: {
+        Args: { p_affiliate_id: string }
+        Returns: number
       }
       calculate_profile_completion: {
         Args: { user_profile: Json; user_role: string }

@@ -11,6 +11,8 @@ import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import AffiliateOnboarding from '@/components/affiliates/AffiliateOnboarding';
+import AffiliateTierBadge from '@/components/affiliates/AffiliateTierBadge';
 
 interface AffiliateData {
   id: string;
@@ -21,6 +23,7 @@ interface AffiliateData {
   total_conversions: number;
   total_commissions: number;
   stripe_connect_account_id: string | null;
+  current_tier?: string;
 }
 
 interface EarningsData {
@@ -199,6 +202,18 @@ const AffiliateDashboard = () => {
 
           {affiliateData.status === 'approved' && (
             <>
+              {/* Onboarding Progress */}
+              <AffiliateOnboarding affiliateId={affiliateData.id} />
+
+              {/* Tier Badge */}
+              <div className="flex items-center gap-3 mb-8">
+                <AffiliateTierBadge 
+                  tierName={affiliateData.current_tier || 'Bronze'} 
+                  totalConversions={affiliateData.total_conversions}
+                  size="lg"
+                />
+              </div>
+
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <Card>
