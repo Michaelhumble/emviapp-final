@@ -139,7 +139,15 @@ verify_jwt = false
 [functions.seo-reindex-cron]
 verify_jwt = false
 
+[functions.seo-health-weekly]
+verify_jwt = false
+
 # SEO Reindex Cron Schedule - Every 2 hours
 [[edge_runtime.cron]]
 function = "seo-reindex-cron"
 schedule = "0 */2 * * *"
+
+# SEO Health Weekly Report - Every Sunday at 3 AM UTC
+[[edge_runtime.cron]]
+function = "seo-health-weekly"
+schedule = "0 3 * * 0"
