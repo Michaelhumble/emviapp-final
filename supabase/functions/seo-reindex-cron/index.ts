@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const BATCH_SIZE = 200;
 const MAX_RETRIES = 5;
 const BASE_URL = 'https://www.emvi.app';
 
@@ -151,7 +150,42 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
     
+    // Read environment variables for throttling
+    const BATCH_SIZE = Number(Deno.env.get('SEO_BATCH_SIZE') ?? 16);
+    const DAILY_CAP = Number(Deno.env.get('SEO_DAILY_CAP') ?? 190);
+    
     console.log('🚀 SEO Reindex Cron starting...');
+    console.log(`⚙️ Config: BATCH_SIZE=${BATCH_SIZE}, DAILY_CAP=${DAILY_CAP}`);
+    
+    // Check daily quota usage from seo_indexing_logs
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    
+    const { count: todayCount, error: countError } = await supabase
+      .from('seo_indexing_logs')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', todayStart.toISOString());
+    
+    if (countError) {
+      console.warn('⚠️ Could not check daily quota, proceeding cautiously:', countError);
+    }
+    
+    const currentDailyUsage = todayCount ?? 0;
+    console.log(`📊 Daily IndexingAPI usage: ${currentDailyUsage}/${DAILY_CAP}`);
+    
+    if (currentDailyUsage >= DAILY_CAP) {
+      console.info(`⚠️ Daily IndexingAPI quota nearing limit (${currentDailyUsage}/${DAILY_CAP}), skipping batch`);
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Skipped: daily cap reached',
+        daily_usage: currentDailyUsage,
+        daily_cap: DAILY_CAP,
+        processed: 0 
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200
+      });
+    }
     
     // Fetch queued items (oldest first, max retries not exceeded)
     const { data: queueItems, error: fetchError } = await supabase
