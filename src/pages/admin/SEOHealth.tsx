@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { RefreshCw, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide-react';
+import { RefreshCw, CheckCircle, XCircle, Clock, ExternalLink, Calendar, TrendingUp } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface QueueStats {
   queued: number;
@@ -25,11 +25,27 @@ interface LastRun {
   metadata?: any;
 }
 
+interface TodayStats {
+  attempts: number;
+  successes: number;
+  failures: number;
+}
+
+interface ChartDataPoint {
+  date: string;
+  queued: number;
+  sent: number;
+  error: number;
+}
+
 export default function SEOHealth() {
   const [queueStats, setQueueStats] = useState<QueueStats | null>(null);
   const [lastRuns, setLastRuns] = useState<LastRun[]>([]);
+  const [todayStats, setTodayStats] = useState<TodayStats | null>(null);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [lastCronRun, setLastCronRun] = useState<Date | null>(null);
+  const [nextCronETA, setNextCronETA] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rebuilding, setRebuilding] = useState(false);
   const { toast } = useToast();
   
   useEffect(() => {
@@ -40,6 +56,65 @@ export default function SEOHealth() {
     setLoading(true);
     
     try {
+      // Get today's stats from indexing logs
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      
+      const { data: todayLogsData } = await supabase
+        .from('seo_indexing_logs')
+        .select('*')
+        .gte('run_date', todayStart.toISOString())
+        .order('run_date', { ascending: false });
+      
+      if (todayLogsData && todayLogsData.length > 0) {
+        const attempts = todayLogsData.reduce((sum: number, log: any) => sum + (log.cities_processed || 0), 0);
+        const successes = todayLogsData.reduce((sum: number, log: any) => sum + (log.cities_succeeded || 0), 0);
+        const failures = todayLogsData.reduce((sum: number, log: any) => sum + (log.cities_failed || 0), 0);
+        
+        setTodayStats({ attempts, successes, failures });
+      } else {
+        setTodayStats({ attempts: 0, successes: 0, failures: 0 });
+      }
+      
+      // Get last 7 days for chart
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { data: queueDataForChart } = await supabase
+        .from('seo_reindex_queue')
+        .select('status, updated_at')
+        .gte('updated_at', sevenDaysAgo.toISOString());
+      
+      if (queueDataForChart) {
+        const dailyStats: Record<string, { queued: number; sent: number; error: number }> = {};
+        
+        queueDataForChart.forEach((item: any) => {
+          const date = new Date(item.updated_at).toISOString().split('T')[0];
+          if (!dailyStats[date]) {
+            dailyStats[date] = { queued: 0, sent: 0, error: 0 };
+          }
+          
+          if (item.status === 'queued') dailyStats[date].queued++;
+          else if (item.status === 'sent') dailyStats[date].sent++;
+          else if (item.status === 'error') dailyStats[date].error++;
+        });
+        
+        const chartDataArray: ChartDataPoint[] = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dateKey = d.toISOString().split('T')[0];
+          chartDataArray.push({
+            date: dateKey,
+            queued: dailyStats[dateKey]?.queued || 0,
+            sent: dailyStats[dateKey]?.sent || 0,
+            error: dailyStats[dateKey]?.error || 0
+          });
+        }
+        
+        setChartData(chartDataArray);
+      }
+      
       // Get queue stats
       const { data: queueData } = await supabase
         .from('seo_reindex_queue')
@@ -71,15 +146,27 @@ export default function SEOHealth() {
         setQueueStats(stats);
       }
       
-      // Get last 3 runs
+      // Get last 5 runs for cron timing
       const { data: runData } = await supabase
         .from('seo_indexing_logs')
         .select('*')
         .order('completed_at', { ascending: false })
-        .limit(3);
+        .limit(5);
       
-      if (runData) {
-        setLastRuns(runData);
+      if (runData && runData.length > 0) {
+        setLastRuns(runData.slice(0, 3));
+        
+        // Calculate last cron run and next ETA
+        const lastRun = runData[0];
+        if (lastRun.completed_at) {
+          const lastRunDate = new Date(lastRun.completed_at);
+          setLastCronRun(lastRunDate);
+          
+          // Cron runs every 2 hours - calculate next run
+          const nextRun = new Date(lastRunDate);
+          nextRun.setHours(nextRun.getHours() + 2);
+          setNextCronETA(nextRun);
+        }
       }
     } catch (error) {
       console.error('Error loading SEO stats:', error);
@@ -93,33 +180,17 @@ export default function SEOHealth() {
     }
   };
   
-  const triggerReindex = async () => {
-    setRebuilding(true);
+  const formatToPacificTime = (date: Date | null): string => {
+    if (!date) return 'N/A';
     
-    try {
-      const { data, error } = await supabase.functions.invoke('seo-reindex-cron');
-      
-      if (error) throw error;
-      
-      toast({
-        title: 'Reindex triggered',
-        description: `Processed ${data?.processed || 0} URLs`,
-      });
-      
-      // Reload stats after a delay
-      setTimeout(() => {
-        loadStats();
-      }, 2000);
-    } catch (error: any) {
-      console.error('Error triggering reindex:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to trigger reindex',
-        variant: 'destructive'
-      });
-    } finally {
-      setRebuilding(false);
-    }
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    }).format(date);
   };
   
   if (loading) {
@@ -138,18 +209,129 @@ export default function SEOHealth() {
         <div>
           <h1 className="text-3xl font-bold">SEO Health Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Monitor search engine indexing and sitemap status
+            Monitor search engine indexing and sitemap status (Read-Only)
           </p>
         </div>
-        <Button 
-          onClick={triggerReindex} 
-          disabled={rebuilding}
-          className="gap-2"
+        <button
+          onClick={loadStats}
+          className="flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-accent"
         >
-          <RefreshCw className={rebuilding ? 'animate-spin' : ''} />
-          {rebuilding ? 'Rebuilding...' : 'Rebuild Now'}
-        </Button>
+          <RefreshCw className="h-4 w-4" />
+          Refresh Data
+        </button>
       </div>
+      
+      {/* Today's Indexing API Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Today's Indexing API Activity
+          </CardTitle>
+          <CardDescription>
+            Google Indexing API attempts for {new Date().toLocaleDateString()}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Attempts</div>
+              <div className="text-3xl font-bold">{todayStats?.attempts || 0}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Successes</div>
+              <div className="text-3xl font-bold text-green-600">{todayStats?.successes || 0}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Failures</div>
+              <div className="text-3xl font-bold text-destructive">{todayStats?.failures || 0}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Cron Schedule */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Cron Schedule (Pacific Time)
+          </CardTitle>
+          <CardDescription>
+            Automated reindexing runs every 2 hours
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Last Run</div>
+              <div className="text-lg font-semibold">{formatToPacificTime(lastCronRun)}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Next Run ETA</div>
+              <div className="text-lg font-semibold">{formatToPacificTime(nextCronETA)}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* 7-Day Rolling Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            7-Day Indexing Activity
+          </CardTitle>
+          <CardDescription>
+            Daily breakdown of queue status changes
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                  }}
+                />
+                <YAxis />
+                <Tooltip 
+                  labelFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString();
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="queued" 
+                  stroke="#f59e0b" 
+                  strokeWidth={2}
+                  name="Queued"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="sent" 
+                  stroke="#10b981" 
+                  strokeWidth={2}
+                  name="Sent"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="error" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  name="Errors"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Queue Stats */}
       <div className="grid gap-4 md:grid-cols-3">
