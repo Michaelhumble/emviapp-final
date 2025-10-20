@@ -11,6 +11,8 @@ import { normalizeCityStateSlug } from '@/utils/slug';
 import { buildLeadCopy, findCitySeed } from '@/seo/locations/lead';
 import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
+import { getCityRoleSeed, getFallbackSeed } from '@/data/cityRoleSeeds';
+import { Button } from '@/components/ui/button';
 
 function toTitle(s: string) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -43,7 +45,11 @@ export default function RoleCityJobsLanding() {
     ((j.category || '').toLowerCase().includes(role.toLowerCase()) || (j.title || '').toLowerCase().includes(role.toLowerCase()))
   ), [jobs, city, state, role]);
   const count = filtered.length;
-  const lead = buildLeadCopy({ city, state, role, countJobs: count, slug: normalized || cityState });
+  
+  // Get unique seed content for this city-role combination
+  const citySlug = normalized || cityState || '';
+  const seedContent = getCityRoleSeed(citySlug, role) || getFallbackSeed(city, state, role);
+  const lead = seedContent.intro;
 
   const { artists = [] } = useOptimizedArtistsData({ isSignedIn: false, limit: 50 });
   const filteredArtists = useMemo(() => artists.filter((a: any) =>
@@ -74,11 +80,14 @@ export default function RoleCityJobsLanding() {
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: `What skills are in demand for ${roleTitle} in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: `${roleTitle} roles in ${label} favor consistent quality, speed, and client care. Certifications and portfolios help.` }},
-      { '@type': 'Question', name: `How often do ${roleTitle} jobs update in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: 'Listings refresh throughout the day; follow this page or post a job to reach local talent quickly.' }},
-      { '@type': 'Question', name: `Where are most ${roleTitle} jobs located in ${city}?`, acceptedAnswer: { '@type': 'Answer', text: 'Hiring clusters around central corridors, shopping areas, and busy neighborhoods.' }}
-    ]
+    mainEntity: seedContent.faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer
+      }
+    }))
   };
 
   return (
@@ -143,10 +152,32 @@ export default function RoleCityJobsLanding() {
             </div>
           </div>
 
+          {/* FAQs Section */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
+            <div className="space-y-4">
+              {seedContent.faqs.map((faq, idx) => (
+                <details key={idx} className="border border-border rounded-lg p-4 bg-card">
+                  <summary className="cursor-pointer font-medium text-lg hover:text-primary transition-colors">
+                    {faq.question}
+                  </summary>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap gap-3">
-            <a href="/post-job" className="rounded-xl border border-border bg-card px-4 py-2 hover:bg-accent/30 transition-colors">Post a job</a>
-            <a href={`/artists/${role}/${normalized || cityState}`} className="rounded-xl border border-border bg-card px-4 py-2 hover:bg-accent/30 transition-colors">Browse artists</a>
+            <Button asChild size="lg" className="rounded-xl">
+              <a href="/post-job">Post a Job</a>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="rounded-xl">
+              <a href="/auth/signup">Sign Up Free</a>
+            </Button>
+            <Button asChild size="lg" variant="ghost" className="rounded-xl">
+              <a href={`/artists/${role}/${normalized || cityState}`}>Browse {roleTitle}</a>
+            </Button>
           </div>
         </Container>
       </section>
