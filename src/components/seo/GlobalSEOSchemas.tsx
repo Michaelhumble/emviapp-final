@@ -6,10 +6,10 @@ const GlobalSEOSchemas = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "EmviApp",
-    "url": "https://emvi.app",
+    "url": "https://www.emvi.app",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://www.emvi.app/meta/emvi-heart-og.png",
+      "url": "https://www.emvi.app/android-chrome-512x512.png",
       "width": 512,
       "height": 512
     },
@@ -39,12 +39,12 @@ const GlobalSEOSchemas = () => {
   const webSiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "url": "https://emvi.app",
+    "url": "https://www.emvi.app",
     "name": "EmviApp",
     "description": "The Beauty Industry's Missing Piece - AI-powered platform connecting salons, artists & customers",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://emvi.app/jobs?query={search_term_string}",
+      "target": "https://www.emvi.app/jobs?query={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
