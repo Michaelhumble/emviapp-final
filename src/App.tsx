@@ -282,6 +282,7 @@ function App() {
                     
                        <Route path="/sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap" replace />} />
                        <Route path="/sitemaps/news.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/news-sitemap" replace />} />
+                       <Route path="/blog-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/blog-sitemap" replace />} />
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />

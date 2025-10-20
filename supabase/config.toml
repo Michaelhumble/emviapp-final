@@ -142,6 +142,9 @@ verify_jwt = false
 [functions.city-sitemap]
 verify_jwt = false
 
+[functions.blog-sitemap]
+verify_jwt = false
+
 [functions.seo-reindex-cron]
 verify_jwt = false
 
