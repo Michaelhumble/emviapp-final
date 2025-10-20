@@ -110,6 +110,12 @@ const ArtistPublicProfilePage: React.FC = () => {
   
   return (
     <Layout>
+      {/* SEO meta tags */}
+      <ArtistProfileSEO 
+        profile={profile} 
+        portfolioImages={portfolioImages.map(img => typeof img === 'string' ? img : img.url)} 
+      />
+      
       <motion.div
         initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
         animate={{ opacity: 1, y: 0 }}

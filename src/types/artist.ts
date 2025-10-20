@@ -33,6 +33,8 @@ export interface ArtistProfile {
   portfolio_urls?: string[];
   independent?: boolean;
   rating?: number;
+  available_for_hire?: boolean;
+  is_hidden?: boolean;
 }
 
 // Export compatibility types but don't replace existing ones

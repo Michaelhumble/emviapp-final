@@ -28,12 +28,18 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
   const domain = 'https://www.emvi.app';
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   
+  // Check if profile should be hidden from search engines
+  const shouldNoIndex = (profile as any).available_for_hire === false || (profile as any).is_hidden === true;
+  
   return (
     <Helmet>
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={currentUrl || domain} />
+      
+      {/* Noindex for hidden or unavailable profiles */}
+      {shouldNoIndex && <meta name="robots" content="noindex, follow" />}
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="profile" />

@@ -125,10 +125,11 @@ async function fetchValidArtistCombinations() {
   
   const { data, error } = await supabase
     .from('profiles')
-    .select('role, specialty, location')
+    .select('role, specialty, location, available_for_hire, is_hidden')
     .in('role', ['artist', 'nail technician/artist'])
     .not('location', 'is', null)
-    .neq('location', '');
+    .neq('location', '')
+    .or('available_for_hire.is.null,available_for_hire.eq.true');
 
   if (error) {
     console.error('Error fetching artists:', error);
@@ -138,6 +139,11 @@ async function fetchValidArtistCombinations() {
   const combinations = new Map();
   
   (data || []).forEach(profile => {
+    // Skip hidden or unavailable profiles
+    if ((profile as any).is_hidden === true || (profile as any).available_for_hire === false) {
+      return;
+    }
+    
     // Map role/specialty to sitemap categories
     let specialty = 'other';
     const roleText = (profile.role || '').toLowerCase();
