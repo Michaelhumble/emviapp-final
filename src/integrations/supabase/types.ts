@@ -334,7 +334,7 @@ export type Database = {
           country_code: string | null
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           link_id: string | null
           referrer: string | null
           user_agent: string | null
@@ -345,7 +345,7 @@ export type Database = {
           country_code?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           link_id?: string | null
           referrer?: string | null
           user_agent?: string | null
@@ -356,7 +356,7 @@ export type Database = {
           country_code?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           link_id?: string | null
           referrer?: string | null
           user_agent?: string | null
@@ -1281,7 +1281,7 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           resource_id: string | null
           resource_type: string
@@ -1292,7 +1292,7 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type: string
@@ -1303,7 +1303,7 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type?: string
@@ -2823,7 +2823,7 @@ export type Database = {
           error_message: string | null
           error_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           route: string | null
           user_agent: string | null
@@ -2834,7 +2834,7 @@ export type Database = {
           error_message?: string | null
           error_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           route?: string | null
           user_agent?: string | null
@@ -2845,7 +2845,7 @@ export type Database = {
           error_message?: string | null
           error_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           route?: string | null
           user_agent?: string | null
@@ -2978,6 +2978,30 @@ export type Database = {
           response?: Json | null
           success?: boolean
           url?: string | null
+        }
+        Relationships: []
+      }
+      job_alerts: {
+        Row: {
+          city: string
+          created_at: string | null
+          email: string
+          id: string
+          role: string
+        }
+        Insert: {
+          city: string
+          created_at?: string | null
+          email: string
+          id?: string
+          role: string
+        }
+        Update: {
+          city?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          role?: string
         }
         Relationships: []
       }
@@ -3342,6 +3366,33 @@ export type Database = {
           sender_id?: string
           sent_at?: string | null
           status?: string | null
+        }
+        Relationships: []
+      }
+      outbound_email_queue: {
+        Row: {
+          created_at: string | null
+          html: string
+          id: string
+          sent_at: string | null
+          subject: string
+          to_email: string
+        }
+        Insert: {
+          created_at?: string | null
+          html: string
+          id?: string
+          sent_at?: string | null
+          subject: string
+          to_email: string
+        }
+        Update: {
+          created_at?: string | null
+          html?: string
+          id?: string
+          sent_at?: string | null
+          subject?: string
+          to_email?: string
         }
         Relationships: []
       }
@@ -3904,7 +3955,7 @@ export type Database = {
           popularity_score: number | null
           provider_id: string
           quality_score: number | null
-          search_vector: unknown | null
+          search_vector: unknown
           services: Json | null
           specialties: string[] | null
           trending_score: number | null
@@ -3917,7 +3968,7 @@ export type Database = {
           popularity_score?: number | null
           provider_id: string
           quality_score?: number | null
-          search_vector?: unknown | null
+          search_vector?: unknown
           services?: Json | null
           specialties?: string[] | null
           trending_score?: number | null
@@ -3930,7 +3981,7 @@ export type Database = {
           popularity_score?: number | null
           provider_id?: string
           quality_score?: number | null
-          search_vector?: unknown | null
+          search_vector?: unknown
           services?: Json | null
           specialties?: string[] | null
           trending_score?: number | null
@@ -3978,7 +4029,7 @@ export type Database = {
           created_at: string | null
           endpoint: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           requests_count: number | null
           updated_at: string | null
           user_id: string | null
@@ -3988,7 +4039,7 @@ export type Database = {
           created_at?: string | null
           endpoint: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           requests_count?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -3998,7 +4049,7 @@ export type Database = {
           created_at?: string | null
           endpoint?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           requests_count?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -5995,15 +6046,18 @@ export type Database = {
         }
         Returns: undefined
       }
-      award_credits: {
-        Args:
-          | {
+      award_credits:
+        | {
+            Args: {
               p_action_type: string
               p_description?: string
               p_user_id: string
               p_value: number
             }
-          | {
+            Returns: boolean
+          }
+        | {
+            Args: {
               p_credits: number
               p_ip_address?: string
               p_metadata?: Json
@@ -6012,8 +6066,8 @@ export type Database = {
               p_user_agent?: string
               p_user_id: string
             }
-        Returns: boolean
-      }
+            Returns: boolean
+          }
       award_referral_upgrade_bonus: {
         Args: { referred_user_id: string }
         Returns: boolean
@@ -6044,10 +6098,7 @@ export type Database = {
         Args: { user_profile: Json; user_role: string }
         Returns: number
       }
-      calculate_salon_completion: {
-        Args: { p_salon: Json }
-        Returns: number
-      }
+      calculate_salon_completion: { Args: { p_salon: Json }; Returns: number }
       can_access_salon_earnings: {
         Args: { p_salon_id: string }
         Returns: boolean
@@ -6060,10 +6111,7 @@ export type Database = {
         Args: { p_post_type: string; p_user_id: string }
         Returns: boolean
       }
-      check_ai_rate_limit: {
-        Args: { p_user_id: string }
-        Returns: Json
-      }
+      check_ai_rate_limit: { Args: { p_user_id: string }; Returns: Json }
       check_api_rate_limit: {
         Args: {
           p_endpoint: string
@@ -6090,14 +6138,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      cleanup_expired_auth_states: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_old_hubspot_events: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_expired_auth_states: { Args: never; Returns: undefined }
+      cleanup_old_hubspot_events: { Args: never; Returns: undefined }
       create_community_notification: {
         Args: {
           p_comment_id?: string
@@ -6111,7 +6153,7 @@ export type Database = {
         Returns: string
       }
       create_diamond_tier_waitlist_if_not_exists: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: undefined
       }
       create_notification: {
@@ -6142,10 +6184,7 @@ export type Database = {
           invite_code: string
         }[]
       }
-      decrement_post_likes: {
-        Args: { post_id: string }
-        Returns: undefined
-      }
+      decrement_post_likes: { Args: { post_id: string }; Returns: undefined }
       detect_prompt_abuse: {
         Args: { p_prompt: string; p_prompt_hash: string; p_user_id: string }
         Returns: string
@@ -6158,26 +6197,14 @@ export type Database = {
         }
         Returns: boolean
       }
-      generate_affiliate_slug: {
-        Args: { base_name: string }
-        Returns: string
-      }
+      generate_affiliate_slug: { Args: { base_name: string }; Returns: string }
       generate_manage_token: {
         Args: { p_booking_id: string; p_email: string }
         Returns: string
       }
-      generate_team_invite_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_universal_invite_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_admin_dashboard_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      generate_team_invite_code: { Args: never; Returns: string }
+      generate_universal_invite_code: { Args: never; Returns: string }
+      get_admin_dashboard_stats: { Args: never; Returns: Json }
       get_artist_earnings_for_user: {
         Args: { p_artist_id: string }
         Returns: {
@@ -6263,10 +6290,7 @@ export type Database = {
           years_experience: number
         }[]
       }
-      get_salon_credits: {
-        Args: { p_salon_id: string }
-        Returns: number
-      }
+      get_salon_credits: { Args: { p_salon_id: string }; Returns: number }
       get_salon_earnings: {
         Args: { p_salon_id: string }
         Returns: {
@@ -6278,18 +6302,9 @@ export type Database = {
           total_revenue: number
         }[]
       }
-      get_user_count: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      get_user_credits: {
-        Args: { p_user_id: string }
-        Returns: number
-      }
-      get_user_free_job_count: {
-        Args: { p_user_id: string }
-        Returns: number
-      }
+      get_user_count: { Args: never; Returns: number }
+      get_user_credits: { Args: { p_user_id: string }; Returns: number }
+      get_user_free_job_count: { Args: { p_user_id: string }; Returns: number }
       get_user_rank: {
         Args: { period_start: string; target_user_id: string }
         Returns: {
@@ -6303,22 +6318,10 @@ export type Database = {
           referral_count: number
         }[]
       }
-      has_great_feedback: {
-        Args: { p_artist_id: string }
-        Returns: boolean
-      }
-      has_posted_free_job: {
-        Args: { p_user_id: string }
-        Returns: boolean
-      }
-      increment_post_likes: {
-        Args: { post_id: string }
-        Returns: undefined
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      has_great_feedback: { Args: { p_artist_id: string }; Returns: boolean }
+      has_posted_free_job: { Args: { p_user_id: string }; Returns: boolean }
+      increment_post_likes: { Args: { post_id: string }; Returns: undefined }
+      is_admin: { Args: never; Returns: boolean }
       is_artist_available: {
         Args: {
           p_artist_id: string
@@ -6328,18 +6331,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_post_expired: {
-        Args: { expires_at: string }
-        Returns: boolean
-      }
-      is_top_performer: {
-        Args: { p_artist_id: string }
-        Returns: boolean
-      }
-      is_user_invited: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_post_expired: { Args: { expires_at: string }; Returns: boolean }
+      is_top_performer: { Args: { p_artist_id: string }; Returns: boolean }
+      is_user_invited: { Args: { user_id: string }; Returns: boolean }
       link_staff_to_user: {
         Args: { p_invitation_token: string; p_user_id: string }
         Returns: boolean
@@ -6369,14 +6363,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      refresh_mv_jobs_recently_filled: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      sanitize_content: {
-        Args: { p_content: string }
-        Returns: string
-      }
+      refresh_mv_jobs_recently_filled: { Args: never; Returns: undefined }
+      sanitize_content: { Args: { p_content: string }; Returns: string }
       search_salon_sales_optimized: {
         Args: {
           business_type_filter?: string
@@ -6433,18 +6421,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      tag_inactive_users: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      tag_top_referrers: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      tag_user: {
-        Args: { p_tag: string; p_user_id: string }
-        Returns: boolean
-      }
+      tag_inactive_users: { Args: never; Returns: undefined }
+      tag_top_referrers: { Args: never; Returns: undefined }
+      tag_user: { Args: { p_tag: string; p_user_id: string }; Returns: boolean }
       track_salon_view: {
         Args: { p_salon_id: string; p_source?: string; p_viewer_id?: string }
         Returns: undefined

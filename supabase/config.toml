@@ -151,6 +151,15 @@ verify_jwt = false
 [functions.state-hub-sitemap]
 verify_jwt = false
 
+[functions.tools-sitemap]
+verify_jwt = false
+
+[functions.alerts-sitemap]
+verify_jwt = false
+
+[functions.notify-job-alerts]
+verify_jwt = false
+
 [functions.seo-reindex-cron]
 verify_jwt = false
 

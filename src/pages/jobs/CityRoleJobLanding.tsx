@@ -199,6 +199,29 @@ export default function CityRoleJobLanding() {
           </section>
         )}
 
+        {/* Micro-CTA: Job Alerts */}
+        <div className="mb-8 p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <p className="text-sm font-medium text-foreground mb-1">
+                💌 Get alerts for new {role.name} jobs in {city.name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Be the first to know when new opportunities are posted
+              </p>
+            </div>
+            <Button 
+              asChild 
+              size="sm" 
+              className="whitespace-nowrap"
+            >
+              <Link to={`/job-alerts?role=${encodeURIComponent(role.name)}&city=${encodeURIComponent(`${city.name}, ${city.state}`)}`}>
+                Get Alerts
+              </Link>
+            </Button>
+          </div>
+        </div>
+
         <section className="bg-muted/50 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Explore More Opportunities</h2>
           <div className="grid gap-3">

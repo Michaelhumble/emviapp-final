@@ -45,6 +45,9 @@ const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
 const CityRoleJobLanding = lazy(() => import("@/pages/jobs/CityRoleJobLanding"));
 const StateHubLanding = lazy(() => import("@/pages/jobs/StateHubLanding"));
+const SalaryCalculator = lazy(() => import("@/pages/SalaryCalculator"));
+const JobAlerts = lazy(() => import("@/pages/JobAlerts"));
+const JobAlertsUnsubscribe = lazy(() => import("@/pages/JobAlertsUnsubscribe"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -287,10 +290,17 @@ function App() {
                        <Route path="/blog-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/blog-sitemap" replace />} />
                        <Route path="/city-role-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/city-role-sitemap" replace />} />
                        <Route path="/state-hub-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/state-hub-sitemap" replace />} />
+                       <Route path="/tools-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/tools-sitemap" replace />} />
+                       <Route path="/alerts-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/alerts-sitemap" replace />} />
                       
-                      {/* Other pages */}
+                     {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     
+                     {/* Salary Calculator & Job Alerts */}
+                     <Route path="/salary-calculator" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><SalaryCalculator /></Suspense></Layout>} />
+                     <Route path="/job-alerts" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><JobAlerts /></Suspense></Layout>} />
+                     <Route path="/job-alerts/unsubscribe" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><JobAlertsUnsubscribe /></Suspense></Layout>} />
                      
                      {/* State Hub Pages (must come before city/role pages) */}
                      <Route path="/jobs/us/:stateSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><StateHubLanding /></Suspense></Layout>} />
