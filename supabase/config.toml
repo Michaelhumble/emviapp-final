@@ -160,6 +160,9 @@ verify_jwt = false
 [functions.notify-job-alerts]
 verify_jwt = false
 
+[functions.product-sitemap]
+verify_jwt = false
+
 [functions.seo-reindex-cron]
 verify_jwt = false
 

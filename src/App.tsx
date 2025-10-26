@@ -48,6 +48,10 @@ const StateHubLanding = lazy(() => import("@/pages/jobs/StateHubLanding"));
 const SalaryCalculator = lazy(() => import("@/pages/SalaryCalculator"));
 const JobAlerts = lazy(() => import("@/pages/JobAlerts"));
 const JobAlertsUnsubscribe = lazy(() => import("@/pages/JobAlertsUnsubscribe"));
+const ProductPage = lazy(() => import("@/pages/ProductPage"));
+const PressMediaPage = lazy(() => import("@/pages/PressMediaPage"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -292,10 +296,17 @@ function App() {
                        <Route path="/state-hub-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/state-hub-sitemap" replace />} />
                        <Route path="/tools-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/tools-sitemap" replace />} />
                        <Route path="/alerts-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/alerts-sitemap" replace />} />
+                       <Route path="/product-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/product-sitemap" replace />} />
                       
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     
+                     {/* Product & Press Pages */}
+                     <Route path="/product" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProductPage /></Suspense></Layout>} />
+                     <Route path="/press" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><PressMediaPage /></Suspense></Layout>} />
+                     <Route path="/privacy" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><PrivacyPage /></Suspense></Layout>} />
+                     <Route path="/terms" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><TermsPage /></Suspense></Layout>} />
                      
                      {/* Salary Calculator & Job Alerts */}
                      <Route path="/salary-calculator" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><SalaryCalculator /></Suspense></Layout>} />
