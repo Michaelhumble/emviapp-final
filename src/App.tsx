@@ -43,6 +43,7 @@ const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
 const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
+const CityRoleJobLanding = lazy(() => import("@/pages/jobs/CityRoleJobLanding"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -283,10 +284,15 @@ function App() {
                        <Route path="/sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap" replace />} />
                        <Route path="/sitemaps/news.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/news-sitemap" replace />} />
                        <Route path="/blog-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/blog-sitemap" replace />} />
+                       <Route path="/city-role-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/city-role-sitemap" replace />} />
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     
+                     {/* City/Role SEO Landing Pages (must come before generic :id route) */}
+                     <Route path="/jobs/:roleSlug/:citySlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityRoleJobLanding /></Suspense></Layout>} />
+                     
                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
                      <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
