@@ -19,6 +19,12 @@ Deno.serve(async (req) => {
         lastmod: now,
         changefreq: 'monthly',
         priority: '0.8'
+      },
+      {
+        loc: `${BASE_URL}/salon-worth`,
+        lastmod: now,
+        changefreq: 'monthly',
+        priority: '0.8'
       }
     ];
 

@@ -22,7 +22,7 @@ const SalonWorth = () => {
           content="Calculate your salon's market value in minutes. Get a free professional valuation based on revenue, location, reviews, and market data. List your salon for sale today."
         />
         <meta name="keywords" content="salon valuation, nail salon worth, business calculator, salon for sale, beauty business value" />
-        <link rel="canonical" href="https://emviapp.com/salon-worth" />
+        <link rel="canonical" href="https://www.emvi.app/salon-worth" />
         
         {/* FAQ Schema */}
         <script type="application/ld+json">
@@ -55,6 +55,23 @@ const SalonWorth = () => {
                 }
               }
             ]
+          })}
+        </script>
+
+        {/* SoftwareApplication Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "EmviApp Salon Worth Calculator",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "url": "https://www.emvi.app/salon-worth",
+            "publisher": {
+              "@type": "Organization",
+              "name": "EmviApp"
+            },
+            "image": "https://www.emvi.app/icons/emvi-master-512.png"
           })}
         </script>
       </Helmet>
