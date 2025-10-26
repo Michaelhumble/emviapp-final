@@ -10,7 +10,9 @@ const SITEMAPS = [
   `${BASE_URL}/salons-sitemap.xml`,
   `${BASE_URL}/artists-sitemap.xml`,
   `${BASE_URL}/city-sitemap.xml`,
-  `${BASE_URL}/blog-sitemap.xml`
+  `${BASE_URL}/blog-sitemap.xml`,
+  `${BASE_URL}/product-sitemap.xml`,
+  `${BASE_URL}/alerts-sitemap.xml`
 ];
 
 interface QueueItem {
@@ -94,12 +96,13 @@ async function pingSitemaps(): Promise<number> {
   let successCount = 0;
   
   // Get current run timestamp to determine which sitemaps to ping
-  const runIndex = Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % 4; // Rotates every 2 hours across 4 batches
+  const runIndex = Math.floor(Date.now() / (2 * 60 * 60 * 1000)) % 5; // Rotates every 2 hours across 5 batches
   const sitemapsToProcess = [
     SITEMAPS.slice(0, 2),    // Batch 0: sitemap.xml, sitemap-static.xml
     SITEMAPS.slice(2, 4),    // Batch 1: jobs-sitemap.xml, salons-sitemap.xml
     SITEMAPS.slice(4, 6),    // Batch 2: artists-sitemap.xml, city-sitemap.xml
-    SITEMAPS.slice(6, 7)     // Batch 3: blog-sitemap.xml
+    SITEMAPS.slice(6, 8),    // Batch 3: blog-sitemap.xml, product-sitemap.xml
+    SITEMAPS.slice(8, 9)     // Batch 4: alerts-sitemap.xml
   ][runIndex];
   
   console.log(`📍 Pinging sitemaps batch ${runIndex}: ${sitemapsToProcess.length} sitemaps`);
