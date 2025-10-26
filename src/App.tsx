@@ -50,6 +50,7 @@ const JobAlerts = lazy(() => import("@/pages/JobAlerts"));
 const JobAlertsUnsubscribe = lazy(() => import("@/pages/JobAlertsUnsubscribe"));
 const ProductPage = lazy(() => import("@/pages/ProductPage"));
 const PressMediaPage = lazy(() => import("@/pages/PressMediaPage"));
+const LaunchAIAgents = lazy(() => import("@/pages/press/LaunchAIAgents"));
 const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
@@ -305,6 +306,7 @@ function App() {
                      {/* Product & Press Pages */}
                      <Route path="/product" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProductPage /></Suspense></Layout>} />
                      <Route path="/press" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><PressMediaPage /></Suspense></Layout>} />
+                     <Route path="/press/launch-ai-agents" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><LaunchAIAgents /></Suspense></Layout>} />
                      <Route path="/privacy" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><PrivacyPage /></Suspense></Layout>} />
                      <Route path="/terms" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><TermsPage /></Suspense></Layout>} />
                      

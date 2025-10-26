@@ -14,36 +14,12 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     
     const urls = [
-      {
-        loc: `${BASE_URL}/product`,
-        lastmod: now,
-        changefreq: 'monthly',
-        priority: '0.9'
-      },
-      {
-        loc: `${BASE_URL}/press`,
-        lastmod: now,
-        changefreq: 'weekly',
-        priority: '0.8'
-      },
-      {
-        loc: `${BASE_URL}/about`,
-        lastmod: now,
-        changefreq: 'monthly',
-        priority: '0.8'
-      },
-      {
-        loc: `${BASE_URL}/privacy`,
-        lastmod: now,
-        changefreq: 'yearly',
-        priority: '0.5'
-      },
-      {
-        loc: `${BASE_URL}/terms`,
-        lastmod: now,
-        changefreq: 'yearly',
-        priority: '0.5'
-      }
+      { loc: `${BASE_URL}/product`, lastmod: now, changefreq: 'monthly', priority: '0.9' },
+      { loc: `${BASE_URL}/press`, lastmod: now, changefreq: 'weekly', priority: '0.8' },
+      { loc: `${BASE_URL}/press/launch-ai-agents`, lastmod: now, changefreq: 'monthly', priority: '0.8' },
+      { loc: `${BASE_URL}/about`, lastmod: now, changefreq: 'monthly', priority: '0.8' },
+      { loc: `${BASE_URL}/privacy`, lastmod: now, changefreq: 'yearly', priority: '0.5' },
+      { loc: `${BASE_URL}/terms`, lastmod: now, changefreq: 'yearly', priority: '0.5' }
     ];
 
     const urlElements = urls.map(url => `

@@ -1,14 +1,16 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Newspaper, 
   Download, 
   Image as ImageIcon, 
   FileText,
   ExternalLink,
-  Award
+  Award,
+  Quote,
+  Mail
 } from 'lucide-react';
 
 export default function PressMediaPage() {
@@ -130,69 +132,112 @@ export default function PressMediaPage() {
             <h2 className="text-3xl font-bold">Press Releases</h2>
           </div>
           
-          <div className="space-y-4">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle>EmviApp Launches AI Salon Agents</CardTitle>
+                <CardDescription>January 15, 2025</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  AI-powered assistants help nail and beauty salons automate bookings, reviews, and marketing—built with authenticity for Vietnamese-American entrepreneurs.
+                </p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/press/launch-ai-agents">
+                    Read Full Release <ExternalLink className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+            
             {pressReleases.map((pr, idx) => (
-              <Card key={idx} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-sm font-medium text-primary">{pr.outlet}</span>
-                      <span className="text-sm text-muted-foreground">{pr.date}</span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3">{pr.title}</h3>
-                    <p className="text-muted-foreground mb-4">{pr.excerpt}</p>
-                  </div>
+              <Card key={idx} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle>{pr.title}</CardTitle>
+                  <CardDescription>{pr.date}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">{pr.excerpt}</p>
                   {pr.url !== '#' && (
-                    <Button asChild variant="outline" size="sm">
+                    <Button variant="outline" size="sm" asChild>
                       <a href={pr.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4" />
+                        Read More <ExternalLink className="w-4 h-4 ml-2" />
                       </a>
                     </Button>
                   )}
-                </div>
+                </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
-        {/* Brand Assets */}
+        {/* Media Assets Section */}
         <section className="container mx-auto px-4 py-16 max-w-5xl">
           <div className="flex items-center gap-3 mb-8">
-            <ImageIcon className="w-6 h-6 text-primary" />
-            <h2 className="text-3xl font-bold">Brand Assets</h2>
+            <Download className="w-6 h-6 text-primary" />
+            <h2 className="text-3xl font-bold">Media Assets</h2>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {brandAssets.map((asset, idx) => {
-              const Icon = asset.icon;
-              return (
-                <Card key={idx} className="p-6 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-4">
-                    <Icon className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">{asset.title}</h3>
-                  <p className="text-sm text-muted-foreground">{asset.description}</p>
-                </Card>
-              );
-            })}
-          </div>
-
-          <Card className="p-6 bg-muted/50">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-semibold mb-1">High-Resolution Assets</h3>
-                <p className="text-sm text-muted-foreground">
-                  Logo files, product screenshots, and founder photos for editorial use
-                </p>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid gap-6 md:grid-cols-3">
+                {brandAssets.map((asset, idx) => {
+                  const Icon = asset.icon;
+                  return (
+                    <div key={idx} className="text-center">
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-4">
+                        <Icon className="w-7 h-7 text-primary" />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">{asset.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">{asset.description}</p>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href="/press-kit.zip" download>
+                          Download
+                        </a>
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
-              <Button asChild variant="default">
-                <a href="/press-kit.zip" download>
-                  <Download className="mr-2 w-4 h-4" />
-                  Download All
-                </a>
-              </Button>
-            </div>
+            </CardContent>
           </Card>
+        </section>
+
+        {/* Founder Quotes Section */}
+        <section className="container mx-auto px-4 py-16 max-w-5xl">
+          <div className="flex items-center gap-3 mb-8">
+            <Quote className="w-6 h-6 text-primary" />
+            <h2 className="text-3xl font-bold">Founder Quotes</h2>
+          </div>
+          
+          <div className="space-y-6">
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="pt-6">
+                <blockquote className="text-lg italic mb-4">
+                  "EmviApp was born from a simple truth: the Vietnamese-American beauty community deserves technology that understands them. Every feature we build starts with listening to real salon owners—their struggles, their dreams, their daily reality. This isn't just software. It's a bridge between tradition and innovation."
+                </blockquote>
+                <p className="text-sm font-semibold">— Michael Nguyen, Founder & CEO</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="pt-6">
+                <blockquote className="text-lg italic mb-4">
+                  "AI should empower, not replace. Our AI Salon Agents don't eliminate the human touch—they amplify it. By automating the routine tasks, we give salon owners more time to do what they love: creating beauty and building relationships with their clients."
+                </blockquote>
+                <p className="text-sm font-semibold">— Michael Nguyen, Founder & CEO</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="pt-6">
+                <blockquote className="text-lg italic mb-4">
+                  "Growing up, I watched my family and community build businesses with their hands and hearts. EmviApp is my way of honoring that legacy—giving them tools that respect their craft while helping them thrive in a digital world."
+                </blockquote>
+                <p className="text-sm font-semibold">— Michael Nguyen, Founder & CEO</p>
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
         {/* About the Founder */}
@@ -214,21 +259,33 @@ export default function PressMediaPage() {
           </Card>
         </section>
 
-        {/* Media Contact */}
-        <section className="container mx-auto px-4 py-16 max-w-3xl">
-          <Card className="p-8 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <h2 className="text-2xl font-bold mb-4">Media Inquiries</h2>
-            <p className="text-muted-foreground mb-6">
-              For press inquiries, interviews, or additional information, please contact:
-            </p>
-            <Button asChild size="lg">
-              <Link to="/contact">
-                Contact Press Team
-              </Link>
-            </Button>
-            <p className="text-sm text-muted-foreground mt-4">
-              Email: <a href="mailto:press@emvi.app" className="text-primary hover:underline">press@emvi.app</a>
-            </p>
+        {/* Press Contact Section */}
+        <section className="container mx-auto px-4 py-16 max-w-5xl">
+          <div className="flex items-center gap-3 mb-8">
+            <Mail className="w-6 h-6 text-primary" />
+            <h2 className="text-3xl font-bold">Press Contact</h2>
+          </div>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-lg mb-6">
+                For press inquiries, interviews, or additional information:
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button asChild>
+                  <a href="mailto:press@emvi.app">
+                    <Mail className="w-4 h-4 mr-2" />
+                    press@emvi.app
+                  </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/press-kit.zip" download>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Full Press Kit
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
           </Card>
         </section>
       </div>
