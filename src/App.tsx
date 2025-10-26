@@ -44,6 +44,7 @@ const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
 const CityRoleJobLanding = lazy(() => import("@/pages/jobs/CityRoleJobLanding"));
+const StateHubLanding = lazy(() => import("@/pages/jobs/StateHubLanding"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -285,10 +286,14 @@ function App() {
                        <Route path="/sitemaps/news.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/news-sitemap" replace />} />
                        <Route path="/blog-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/blog-sitemap" replace />} />
                        <Route path="/city-role-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/city-role-sitemap" replace />} />
+                       <Route path="/state-hub-sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/state-hub-sitemap" replace />} />
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     
+                     {/* State Hub Pages (must come before city/role pages) */}
+                     <Route path="/jobs/us/:stateSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><StateHubLanding /></Suspense></Layout>} />
                      
                      {/* City/Role SEO Landing Pages (must come before generic :id route) */}
                      <Route path="/jobs/:roleSlug/:citySlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityRoleJobLanding /></Suspense></Layout>} />

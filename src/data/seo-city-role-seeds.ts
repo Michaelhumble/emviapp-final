@@ -104,6 +104,9 @@ export function generateCityRoleContent(role: string, city: string, state: strin
         reviewCount: 81,
         description: `Contemporary salon with flexible scheduling and booth rental options.`
       }
-    ]
+    ],
+    // Optional UGC fields (only rendered if data exists)
+    localTips: undefined as string[] | undefined,
+    gallery: undefined as Array<{ url: string; alt?: string }> | undefined
   };
 }

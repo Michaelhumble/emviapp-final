@@ -18,14 +18,18 @@ export default function CityRoleJobLanding() {
   const pageTitle = `${role.name} Jobs in ${city.name}, ${city.state} | EmviApp`;
   const canonical = `https://www.emvi.app/jobs/${roleSlug}/${citySlug}`;
 
+  // Get state info for breadcrumbs
+  const stateSlug = city.state.toLowerCase().replace(/\s+/g, '-');
+  const stateUrl = `https://www.emvi.app/jobs/us/${stateSlug}`;
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.emvi.app" },
       { "@type": "ListItem", "position": 2, "name": "Jobs", "item": "https://www.emvi.app/jobs" },
-      { "@type": "ListItem", "position": 3, "name": `${role.name} Jobs`, "item": `https://www.emvi.app/jobs/${roleSlug}` },
-      { "@type": "ListItem", "position": 4, "name": `${city.name}, ${city.state}`, "item": canonical }
+      { "@type": "ListItem", "position": 3, "name": `${city.state}`, "item": stateUrl },
+      { "@type": "ListItem", "position": 4, "name": `${city.name}`, "item": canonical }
     ]
   };
 
@@ -79,7 +83,7 @@ export default function CityRoleJobLanding() {
             <span>/</span>
             <Link to="/jobs" className="hover:text-primary">Jobs</Link>
             <span>/</span>
-            <span>{role.name}</span>
+            <Link to={stateUrl} className="hover:text-primary">{city.state}</Link>
             <span>/</span>
             <span>{city.name}</span>
           </div>
@@ -102,6 +106,23 @@ export default function CityRoleJobLanding() {
             </Button>
           </div>
         </div>
+
+        {/* UGC: Local Tips from the Community (only render if data exists) */}
+        {content.localTips && content.localTips.length > 0 && (
+          <section className="mb-12 bg-accent/50 rounded-lg p-6 border border-primary/20">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              💡 Local Tips from the Community
+            </h3>
+            <div className="space-y-3">
+              {content.localTips.slice(0, 3).map((tip, idx) => (
+                <p key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span>{tip}</span>
+                </p>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
@@ -155,6 +176,28 @@ export default function CityRoleJobLanding() {
             )}
           </div>
         </section>
+
+        {/* UGC: Mini Gallery (only render if data exists) */}
+        {content.gallery && content.gallery.length > 0 && (
+          <section className="mb-12">
+            <h3 className="text-lg font-semibold mb-4">Local Work Showcase</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {content.gallery.slice(0, 4).map((image, idx) => (
+                <div 
+                  key={idx} 
+                  className="aspect-square rounded-lg overflow-hidden bg-muted hover:shadow-lg transition-shadow"
+                >
+                  <img 
+                    src={image.url} 
+                    alt={image.alt || `${role.name} work in ${city.name}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="bg-muted/50 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Explore More Opportunities</h2>
