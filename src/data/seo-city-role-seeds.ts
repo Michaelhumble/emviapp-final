@@ -60,6 +60,49 @@ export function generateCityRoleContent(role: string, city: string, state: strin
       {
         question: `How quickly can I find a ${role.toLowerCase()} job in ${city}?`,
         answer: `Many candidates receive interview requests within 48 hours of posting their profile. Active job seekers in ${city} typically secure positions within 1-3 weeks.`
+      },
+      {
+        question: `What are the top salons hiring ${role.toLowerCase()}s in ${city} right now?`,
+        answer: `${city} has numerous salons actively recruiting ${role.toLowerCase()}s. EmviApp's live job board features verified openings at top-rated establishments. Create a profile to receive direct messages from employers.`
+      },
+      {
+        question: `What is the typical commission rate for ${role.toLowerCase()}s in ${city}?`,
+        answer: `${city} ${role.toLowerCase()}s typically earn 40-60% commission plus tips. High-end salons may offer up to 70% for experienced professionals with established clientele.`
+      },
+      {
+        question: `What are common interview questions for ${role.toLowerCase()} positions in ${city}?`,
+        answer: `Expect questions about your experience, specialties, client retention strategies, and availability. Many ${city} salons also request portfolio reviews or practical demonstrations.`
+      },
+      {
+        question: `Are there part-time ${role.toLowerCase()} opportunities in ${city}?`,
+        answer: `Yes, ${city} offers flexible part-time, weekend, and evening positions for ${role.toLowerCase()}s. Many salons accommodate students or those seeking supplemental income.`
+      },
+      {
+        question: `What career advancement opportunities exist for ${role.toLowerCase()}s in ${city}?`,
+        answer: `${city} ${role.toLowerCase()}s can advance to senior stylist, educator, salon manager, or open their own studio. Many professionals build loyal clientele and transition to booth rental or independent contracting.`
+      }
+    ],
+    topSalons: [
+      {
+        name: `Premier Beauty Lounge`,
+        location: `${city}, ${state}`,
+        rating: 4.8,
+        reviewCount: 127,
+        description: `Upscale salon seeking experienced ${role.toLowerCase()}s with strong client base.`
+      },
+      {
+        name: `Luxury Nail & Spa`,
+        location: `${city}, ${state}`,
+        rating: 4.7,
+        reviewCount: 94,
+        description: `High-end establishment offering competitive commission and benefits.`
+      },
+      {
+        name: `Modern Style Studio`,
+        location: `${city}, ${state}`,
+        rating: 4.6,
+        reviewCount: 81,
+        description: `Contemporary salon with flexible scheduling and booth rental options.`
       }
     ]
   };

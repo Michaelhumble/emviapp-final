@@ -37,6 +37,30 @@ export default function CityRoleJobLanding() {
     "url": canonical
   };
 
+  const jobPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": `${role.name} Positions in ${city.name}, ${city.state}`,
+    "description": content.intro,
+    "datePosted": new Date().toISOString(),
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "EmviApp",
+      "sameAs": "https://www.emvi.app"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": city.name,
+        "addressRegion": city.state,
+        "addressCountry": "US"
+      }
+    },
+    "employmentType": ["FULL_TIME", "PART_TIME", "CONTRACTOR"],
+    "industry": "Beauty & Wellness"
+  };
+
   return (
     <>
       <Helmet>
@@ -45,6 +69,7 @@ export default function CityRoleJobLanding() {
         <link rel="canonical" href={canonical} />
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(jobPostingSchema)}</script>
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -79,14 +104,55 @@ export default function CityRoleJobLanding() {
         </div>
 
         <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+            <Briefcase className="h-6 w-6 text-primary" />
+            Top Salons Hiring {role.name}s in {city.name}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            {content.topSalons?.map((salon, idx) => (
+              <Link 
+                key={idx} 
+                to="/salons" 
+                className="border rounded-lg p-5 hover:shadow-lg transition-shadow bg-card"
+              >
+                <h3 className="font-semibold text-lg mb-2">{salon.name}</h3>
+                <p className="text-sm text-muted-foreground mb-2">
+                  <MapPin className="h-3 w-3 inline mr-1" />
+                  {salon.location}
+                </p>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm font-medium">{salon.rating} ★</span>
+                  <span className="text-xs text-muted-foreground">({salon.reviewCount} reviews)</span>
+                </div>
+                <p className="text-sm mb-4">{salon.description}</p>
+                <Button size="sm" className="w-full">
+                  View Open Positions <ArrowRight className="ml-2 h-3 w-3" />
+                </Button>
+              </Link>
+            )) || (
+              <div className="col-span-3 text-center text-muted-foreground py-8">
+                <p>Browse all salons hiring in {city.name}</p>
+                <Button asChild variant="outline" size="lg" className="mt-4">
+                  <Link to="/salons">View All Salons</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
           <div className="space-y-6">
-            {content.faqs.map((faq, idx) => (
+            {content.faqs?.map((faq, idx) => (
               <div key={idx} className="border-l-4 border-primary pl-4">
                 <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
                 <p className="text-muted-foreground">{faq.answer}</p>
               </div>
-            ))}
+            )) || (
+              <div className="text-center text-muted-foreground py-4">
+                <p>No FAQs available at this time.</p>
+              </div>
+            )}
           </div>
         </section>
 
