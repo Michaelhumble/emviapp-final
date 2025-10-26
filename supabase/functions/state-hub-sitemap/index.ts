@@ -1,4 +1,15 @@
-import { STATE_HUB_SEEDS } from '../../../src/data/seo-state-seeds.ts';
+const STATE_HUB_SEEDS = [
+  { id: 'california', name: 'California', slug: 'california', code: 'CA' },
+  { id: 'texas', name: 'Texas', slug: 'texas', code: 'TX' },
+  { id: 'florida', name: 'Florida', slug: 'florida', code: 'FL' },
+  { id: 'new-york', name: 'New York', slug: 'new-york', code: 'NY' },
+  { id: 'washington', name: 'Washington', slug: 'washington', code: 'WA' },
+  { id: 'illinois', name: 'Illinois', slug: 'illinois', code: 'IL' },
+  { id: 'georgia', name: 'Georgia', slug: 'georgia', code: 'GA' },
+  { id: 'north-carolina', name: 'North Carolina', slug: 'north-carolina', code: 'NC' },
+  { id: 'massachusetts', name: 'Massachusetts', slug: 'massachusetts', code: 'MA' },
+  { id: 'arizona', name: 'Arizona', slug: 'arizona', code: 'AZ' }
+] as const;
 
 const BASE_URL = 'https://www.emvi.app';
 
