@@ -3,6 +3,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Bottom Sheet Animation */
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Tabular numerals for consistent number width */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
 @import './styles/chat-premium.css';
 @import './styles/prose-enhanced.css';
 @import './styles/gradient-text.css';
