@@ -1,25 +1,17 @@
 // ============= EMVIAPP SERVICE WORKER - PERFORMANCE OPTIMIZATION =============
 // Aggressive caching strategy for maximum performance
 
-const CACHE_VERSION = 'v2.4.0-pwa-secure';
+const CACHE_VERSION = 'v2025-10-27-icons';
 const CACHE_NAME = `emviapp-${CACHE_VERSION}`;
 const STATIC_CACHE = `emviapp-static-${CACHE_VERSION}`;
 const IMAGE_CACHE = `emviapp-images-${CACHE_VERSION}`;
 const API_CACHE = `emviapp-api-${CACHE_VERSION}`;
 const PRESS_CACHE = 'press-logos-v4';
 
-// Assets to cache immediately
+// Assets to cache immediately - EXCLUDING icons/manifest to force fresh fetch
 const STATIC_ASSETS = [
   '/',
-  '/site.webmanifest',
-  '/favicon-32x32.png',
-  '/favicon-16x16.png',
-  '/android-chrome-192x192.png',
-  '/android-chrome-512x512.png',
-  '/apple-touch-icon.png',
-  '/apple-touch-icon-120x120.png',
-  '/apple-touch-icon-152x152.png',
-  '/apple-touch-icon-167x167.png',
+  // Icons and manifest excluded - let network fetch them fresh
   // Critical CSS and JS will be added by build process
 ];
 

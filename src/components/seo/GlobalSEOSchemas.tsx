@@ -9,7 +9,7 @@ const GlobalSEOSchemas = () => {
     "url": "https://www.emvi.app",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://www.emvi.app/icons/emvi-master-512.png",
+      "url": "https://www.emvi.app/icons/emvi-master-512.png?v=2025-10-27",
       "width": 512,
       "height": 512
     },
