@@ -113,17 +113,21 @@ const SalonWorth = () => {
             {/* Hero Search Form */}
             <form onSubmit={handleCalculateClick} className="max-w-xl mx-auto">
               <div className="flex flex-col sm:flex-row gap-3 p-2 bg-white rounded-2xl shadow-2xl border-2 border-purple-100">
+                <label htmlFor="city-input" className="sr-only">Enter your city or ZIP code</label>
                 <Input
+                  id="city-input"
                   type="text"
                   placeholder="Enter your city or ZIP code"
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
                   className="flex-1 border-0 focus-visible:ring-0 text-base h-14 bg-transparent"
+                  aria-label="Enter your city or ZIP code to calculate salon worth"
                 />
                 <Button 
                   type="submit"
                   size="lg"
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-8 h-14 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap"
+                  aria-label="Calculate my salon's worth"
                 >
                   Calculate My Worth <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
