@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SalonWorthCalculator } from '@/components/calculator/SalonWorthCalculator';
 import { TestimonialBlock } from '@/components/calculator/TestimonialBlock';
@@ -10,9 +10,31 @@ import { AdditionalTestimonials } from '@/components/calculator/AdditionalTestim
 import { ListingBenefitsTable } from '@/components/calculator/ListingBenefitsTable';
 import { SecurityBadges } from '@/components/calculator/SecurityBadges';
 import { TestimonialCarousel } from '@/components/calculator/TestimonialCarousel';
-import { Calculator, TrendingUp, Shield, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const SalonWorth = () => {
+  const calculatorRef = useRef<HTMLDivElement>(null);
+  const [cityInput, setCityInput] = useState('');
+
+  const handleCalculateClick = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Smooth scroll to calculator
+    calculatorRef.current?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+    
+    // Auto-focus revenue field after scroll
+    setTimeout(() => {
+      const revenueField = document.getElementById('revenue') as HTMLInputElement;
+      if (revenueField) {
+        revenueField.focus();
+      }
+    }, 800);
+  };
   return (
     <>
       <Helmet>
@@ -77,95 +99,47 @@ const SalonWorth = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        {/* Hero Section with Premium Gradient */}
-        <section className="bg-gradient-to-br from-white via-purple-50 to-pink-50 py-20 px-4 relative overflow-hidden">
+        {/* Simplified Hero Section */}
+        <section className="bg-gradient-to-br from-white via-purple-50 to-pink-50 py-24 md:py-32 px-4 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-transparent to-pink-100/20" />
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <div className="mb-6 flex justify-center">
-              <SocialProofBadge />
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-              What's Your Salon Worth?
+          <div className="max-w-3xl mx-auto text-center relative z-10">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              💰 Test Your Salon's Worth Instantly.
             </h1>
-            <p className="text-xl md:text-2xl text-foreground/80 mb-8 font-medium">
-              Instant estimate based on real salon sales, location, and reputation signals.
+            <p className="text-lg md:text-xl text-foreground/80 mb-10 font-medium">
+              Find out how much your salon could sell for — free and takes 10 seconds.
             </p>
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-purple-100 mb-8">
-              <span className="font-semibold text-purple-900">Powered by:</span>
-              <span className="text-foreground/70">EmviApp Market Data</span>
-              <span className="text-purple-400">•</span>
-              <span className="text-foreground/70">Google Reviews</span>
-              <span className="text-purple-400">•</span>
-              <span className="text-foreground/70">Industry Benchmarks</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Trust Metrics Bar - Moved Higher */}
-        <section className="py-12 px-4 bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-y border-purple-100">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="space-y-2">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  10,000+
-                </div>
-                <div className="text-foreground/70 font-medium">Beauty Professionals</div>
+            
+            {/* Hero Search Form */}
+            <form onSubmit={handleCalculateClick} className="max-w-xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-white rounded-2xl shadow-2xl border-2 border-purple-100">
+                <Input
+                  type="text"
+                  placeholder="Enter your city or ZIP code"
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  className="flex-1 border-0 focus-visible:ring-0 text-base h-14 bg-transparent"
+                />
+                <Button 
+                  type="submit"
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-8 h-14 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap"
+                >
+                  Calculate My Worth <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
               </div>
-              <div className="space-y-2">
-                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
-                  4.9★
-                </div>
-                <div className="text-foreground/70 font-medium">Average Rating</div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
-                  100,000+
-                </div>
-                <div className="text-foreground/70 font-medium">Happy Customers</div>
-              </div>
-            </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                ✨ No credit card • No signup • Instant results
+              </p>
+            </form>
           </div>
         </section>
 
         <div className="max-w-7xl mx-auto px-4 py-12">
-          {/* Live Valuation Ticker */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <LiveValuationTicker />
-          </div>
-
-          {/* Features */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-card rounded-lg border">
-              <div className="flex justify-center mb-3">
-                <Zap className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Instant Results</h3>
-              <p className="text-sm text-muted-foreground">
-                Get your valuation in under 2 minutes
-              </p>
-            </div>
-            <div className="text-center p-6 bg-card rounded-lg border">
-              <div className="flex justify-center mb-3">
-                <TrendingUp className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Market Data</h3>
-              <p className="text-sm text-muted-foreground">
-                Based on actual salon sale prices
-              </p>
-            </div>
-            <div className="text-center p-6 bg-card rounded-lg border">
-              <div className="flex justify-center mb-3">
-                <Shield className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">100% Free</h3>
-              <p className="text-sm text-muted-foreground">
-                No hidden fees or obligations
-              </p>
-            </div>
-          </div>
-
           {/* Calculator Component */}
-          <SalonWorthCalculator />
+          <div ref={calculatorRef}>
+            <SalonWorthCalculator />
+          </div>
 
           {/* Testimonial Carousel */}
           <TestimonialCarousel />
