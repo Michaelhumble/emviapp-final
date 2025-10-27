@@ -4,7 +4,7 @@ export const buildOrganizationJsonLd = () => ({
   "name": "EmviApp",
   "description": "Premium beauty platform connecting professionals with opportunities worldwide",
   "url": "https://www.emvi.app",
-  "logo": "https://www.emvi.app/android-chrome-512x512.png",
+  "logo": "https://www.emvi.app/icons/emvi-master-512.png",
   "foundingDate": "2024",
   "industry": "Beauty and Personal Care Technology",
   "contactPoint": {
@@ -44,7 +44,7 @@ export const buildWebsiteJsonLd = () => ({
     "@type": "Organization",
     "name": "EmviApp",
     "url": "https://www.emvi.app",
-    "logo": "https://www.emvi.app/android-chrome-512x512.png",
+    "logo": "https://www.emvi.app/icons/emvi-master-512.png",
     "sameAs": [
       "https://www.facebook.com/emviapp",
       "https://www.instagram.com/emviapp",
@@ -134,7 +134,7 @@ export const buildJobPostingJsonLd = (job: {
     "url": "https://www.emvi.app",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://www.emvi.app/android-chrome-512x512.png",
+      "url": "https://www.emvi.app/icons/emvi-master-512.png",
       "width": 512,
       "height": 512
     }
@@ -341,7 +341,7 @@ export const buildArticleJsonLd = (article: {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.emvi.app/android-chrome-512x512.png"
+        "url": "https://www.emvi.app/icons/emvi-master-512.png"
       }
     },
     "datePublished": sanitizedArticle.datePublished || new Date().toISOString(),
