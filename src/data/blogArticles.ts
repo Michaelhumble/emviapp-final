@@ -138,7 +138,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     title: 'The Future of Beauty Business: How AI is Transforming Salons, Nail Artists & Freelancers',
     description: 'Discover how EmviApp\'s AI revolution is helping salon owners and beauty pros attract clients, save time, and earn more — all powered by smart automation and heart.',
     author: 'Sunshine',
-    publishedAt: '2025-02-20',
+    publishedAt: '2025-10-28',
     readTime: '12 min read',
     category: 'AI & Technology',
     categorySlug: 'ai-technology',

@@ -63,8 +63,8 @@ const AIBeautyFuture = () => {
     "@type": "Article",
     "headline": "The Future of Beauty Business: How AI is Transforming Salons, Nail Artists & Freelancers",
     "image": aiFutureHeroImage,
-    "datePublished": "2025-02-20",
-    "dateModified": "2025-02-20",
+    "datePublished": "2025-10-28",
+    "dateModified": "2025-10-28",
     "author": {
       "@type": "Person",
       "name": "Sunshine",
