@@ -1,6 +1,9 @@
 
 project_id = "wwhqbjrhbajpabfdwnip"
 
+[functions.csp-report]
+verify_jwt = false
+
 [functions.sunshine-api]
 verify_jwt = false
 
