@@ -17,6 +17,14 @@ const BlogIndex = () => {
 
   const blogPosts = [
     {
+      title: 'How AI Marketing is Changing the Beauty Industry',
+      excerpt: 'Discover how AI agents help salons grow visibility, bookings, and brand loyalty through smart automation. Real strategies from Vietnamese-American beauty professionals.',
+      url: '/blog/ai-marketing-beauty-industry',
+      badge: '🔥 Pinned',
+      readTime: '10 min read',
+      publishedAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    },
+    {
       title: 'How to Find the Best Beauty Professionals in the US (2025 Guide)',
       excerpt: 'Complete guide to finding top nail artists, hair stylists, lash techs, and beauty professionals in major US cities. Expert tips, red flags to avoid, and insider secrets.',
       url: '/blog/how-to-find-the-best-beauty-professionals',

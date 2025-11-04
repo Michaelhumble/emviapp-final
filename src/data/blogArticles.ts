@@ -33,6 +33,7 @@ import beautyJobsUSA2025Hero from '@/assets/blog/beauty-jobs-usa-2025-hero.jpg';
 import weddingBeautyChecklist2025Hero from '@/assets/blog/wedding-beauty-checklist-2025-hero.jpg';
 import laNailSalonGuide2025Hero from '@/assets/blog/la-nail-salon-guide-2025-hero.jpg';
 import aiBeautyFutureHero from '@/assets/blog/ai-beauty-future-hero.jpg';
+import aiMarketingBeautyIndustryHero from '@/assets/blog/ai-marketing-beauty-industry-hero.jpg';
 // Missing 2025 Article Images
 import costLivingNailCareersBestCitiesHero from '@/assets/blog/cost-living-nail-career-cities-hero.webp';
 import nailSalonStepByStepGuideHero from '@/assets/blog/nail-salon-opening-guide-hero.webp';
@@ -60,6 +61,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const AIMarketingBeautyIndustry = lazy(() => import('@/pages/blog/ai-marketing-beauty-industry'));
 const AIBeautyFuture = lazy(() => import('@/pages/blog/ai-beauty-future'));
 const UltimateNailTechSalaryGuide = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
 const CostOfLivingVsNailCareersBestCities2025 = lazy(() => import('@/pages/blog/cost-of-living-vs-nail-careers-best-cities-2025'));
@@ -131,6 +133,25 @@ const PricingPostingReviewsSellFast = lazy(() => import('@/pages/blog/pricing-po
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  // PINNED FEATURED ARTICLE - AI Marketing (Latest)
+  {
+    id: 'ai-marketing-beauty-industry',
+    slug: 'ai-marketing-beauty-industry',
+    title: 'How AI Marketing is Changing the Beauty Industry',
+    description: 'Discover how AI agents help salons grow visibility, bookings, and brand loyalty through smart automation. Real strategies from Vietnamese-American beauty professionals transforming their businesses with AI.',
+    author: 'EmviApp Team',
+    publishedAt: new Date().toISOString().split('T')[0],
+    readTime: '10 min read',
+    category: 'AI & Technology',
+    categorySlug: 'ai-technology',
+    tags: ['beauty marketing', 'AI salon tools', 'nail salon SEO', 'EmviApp', 'salon growth automation', 'Vietnamese beauty business'],
+    image: aiMarketingBeautyIndustryHero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: AIMarketingBeautyIndustry,
+    url: '/blog/ai-marketing-beauty-industry'
+  },
   // NEWEST FEATURED ARTICLE - 2025
   {
     id: 'ai-beauty-future',
