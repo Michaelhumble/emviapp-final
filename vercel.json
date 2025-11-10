@@ -4,6 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
+    { "source": "/favicon.ico", "destination": "/emvi-heart-icon.png", "permanent": true },
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "emvi.app" }],
@@ -115,6 +116,12 @@
     }
   ],
   "headers": [
+    {
+      "source": "/favicon.ico",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
