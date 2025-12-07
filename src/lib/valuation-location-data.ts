@@ -1,221 +1,229 @@
 /**
- * Comprehensive US Metro Area Multipliers for Salon Valuation
- * Based on median home prices, business costs, and demand
+ * Comprehensive US Location Tier System for Salon Valuation
+ * Expanded coverage with 4-tier system
  */
 
-export interface MetroMultiplier {
-  name: string;
-  multiplier: number; // 1.0 = baseline, 1.25 = 25% premium
-  zips: string[];
+export type LocationTier = 1 | 2 | 3 | 4;
+
+export interface LocationTierResult {
+  tier: LocationTier;
+  areaName: string;
+  multiplierAdjustment: number; // Added to base multiple
 }
 
-export const METRO_MULTIPLIERS: Record<string, MetroMultiplier> = {
-  // TIER 1: Super Premium Markets (1.25-1.30x)
-  'SF_BAY_AREA': {
-    name: 'San Francisco Bay Area',
-    multiplier: 1.30,
-    zips: [
-      // San Francisco
-      '94102', '94103', '94104', '94105', '94107', '94108', '94109', '94110', '94111', '94112',
-      '94114', '94115', '94116', '94117', '94118', '94121', '94122', '94123', '94124', '94127',
-      '94129', '94130', '94131', '94132', '94133', '94134',
-      // Palo Alto, Mountain View, Sunnyvale
-      '94301', '94302', '94303', '94304', '94305', '94306', '94040', '94041', '94043', '94085', '94086', '94087',
-      // Cupertino, Los Gatos, Saratoga
-      '95014', '95030', '95032', '95033', '95070',
-    ]
-  },
-  'ORANGE_COUNTY_PREMIUM': {
-    name: 'Orange County (Coastal)',
-    multiplier: 1.25,
-    zips: [
-      '92625', '92626', '92660', '92661', '92662', '92663', // Newport Beach
-      '92651', '92652', '92653', '92654', // Laguna Beach, Laguna Niguel
-      '92657', '92677', // Newport Coast, Laguna Niguel
-      '92691', '92692', '92694', // Mission Viejo
-      '92618', '92620', '92612', '92603', '92604', '92606', '92614', // Irvine
-      '92704', '92705', '92706', '92707', '92708', // Santa Ana (select)
-    ]
-  },
-  'LA_WEST_SIDE': {
-    name: 'Los Angeles West Side',
-    multiplier: 1.25,
-    zips: [
-      '90210', '90211', '90212', // Beverly Hills
-      '90024', '90025', '90064', '90065', '90066', '90067', // West LA, Westwood
-      '90272', '90291', '90292', // Pacific Palisades, Venice
-      '90401', '90402', '90403', '90404', '90405', // Santa Monica
-      '90049', '90077', // Bel Air, Brentwood
-      '91302', '91361', '91362', '91364', // Calabasas, Westlake Village
-    ]
-  },
-
-  // TIER 2: High-Demand Markets (1.15-1.20x)
-  'SEATTLE': {
-    name: 'Seattle Metro',
-    multiplier: 1.20,
-    zips: [
-      '98101', '98102', '98103', '98104', '98105', '98107', '98109', '98112', '98115', '98116',
-      '98117', '98118', '98119', '98121', '98122', '98125', '98126', '98133', '98134', '98144',
-      '98004', '98005', '98006', '98007', '98008', '98033', '98039', '98040', // Bellevue, Redmond
-      '98052', '98053', // Redmond
-    ]
-  },
-  'SAN_DIEGO': {
-    name: 'San Diego County',
-    multiplier: 1.18,
-    zips: [
-      '92101', '92102', '92103', '92104', '92105', '92106', '92107', '92108', '92109', '92110',
-      '92111', '92116', '92117', '92118', '92120', '92121', '92122', '92123', '92124', '92126',
-      '92127', '92128', '92129', '92130', '92131', '92132', '92134', '92135', '92139', '92140',
-      '92154', '92173',
-      '92009', '92011', '92014', '92024', '92029', '92037', '92067', '92075', // La Jolla, Del Mar, Encinitas
-    ]
-  },
-  'AUSTIN': {
-    name: 'Austin Metro',
-    multiplier: 1.18,
-    zips: [
-      '78701', '78702', '78703', '78704', '78705', '78717', '78721', '78722', '78723', '78724',
-      '78727', '78728', '78729', '78730', '78731', '78732', '78733', '78734', '78735', '78736',
-      '78737', '78738', '78739', '78741', '78744', '78745', '78746', '78747', '78748', '78749',
-      '78750', '78751', '78752', '78753', '78754', '78756', '78757', '78758', '78759',
-    ]
-  },
-  'DENVER': {
-    name: 'Denver Metro',
-    multiplier: 1.15,
-    zips: [
-      '80202', '80203', '80204', '80205', '80206', '80207', '80209', '80210', '80211', '80212',
-      '80218', '80219', '80220', '80221', '80222', '80223', '80224', '80226', '80227', '80230',
-      '80231', '80237', '80238', '80246', '80247', '80249', '80264',
-      // Cherry Creek, Highlands, LoDo
-    ]
-  },
-
-  // TIER 3: Strong Markets (1.10-1.15x)
-  'BOSTON': {
-    name: 'Boston Metro',
-    multiplier: 1.15,
-    zips: [
-      '02108', '02109', '02110', '02111', '02113', '02114', '02115', '02116', '02118', '02119',
-      '02120', '02121', '02122', '02124', '02125', '02126', '02127', '02128', '02129', '02130',
-      '02131', '02132', '02134', '02135', '02136', '02163', '02199', '02210', '02215',
-      '02138', '02139', '02140', '02141', '02142', '02143', '02144', '02145', // Cambridge
-    ]
-  },
-  'MIAMI': {
-    name: 'Miami-Dade County',
-    multiplier: 1.12,
-    zips: [
-      '33109', '33125', '33126', '33127', '33128', '33129', '33130', '33131', '33132', '33133',
-      '33134', '33135', '33136', '33137', '33138', '33139', '33140', '33141', '33142', '33143',
-      '33144', '33145', '33146', '33147', '33149', '33150', '33154', '33155', '33156', '33157',
-      '33158', '33160', '33161', '33162', '33165', '33166', '33167', '33168', '33169', '33170',
-      '33172', '33173', '33174', '33175', '33176', '33177', '33178', '33179', '33180', '33181',
-      '33183', '33184', '33185', '33186', '33187', '33189', '33190', '33193', '33194', '33196',
-    ]
-  },
-  'ATLANTA': {
-    name: 'Atlanta Metro',
-    multiplier: 1.10,
-    zips: [
-      '30303', '30305', '30306', '30307', '30308', '30309', '30310', '30311', '30312', '30313',
-      '30314', '30315', '30316', '30317', '30318', '30319', '30324', '30326', '30327', '30328',
-      '30329', '30331', '30332', '30334', '30336', '30338', '30339', '30340', '30341', '30342',
-      '30344', '30345', '30346', '30348', '30349', '30350', '30354', '30360', '30363', '30368',
-    ]
-  },
-
-  // TIER 4: Moderate Markets (1.05-1.10x)
-  'DALLAS': {
-    name: 'Dallas-Fort Worth',
-    multiplier: 1.08,
-    zips: [
-      '75201', '75202', '75203', '75204', '75205', '75206', '75207', '75208', '75209', '75210',
-      '75211', '75212', '75214', '75215', '75216', '75217', '75218', '75219', '75220', '75223',
-      '75224', '75225', '75226', '75227', '75228', '75229', '75230', '75231', '75232', '75233',
-      '75234', '75235', '75236', '75237', '75238', '75240', '75241', '75243', '75244', '75246',
-      '75247', '75248', '75249', '75251', '75252', '75253', '75254',
-    ]
-  },
-  'HOUSTON': {
-    name: 'Houston Metro',
-    multiplier: 1.05,
-    zips: [
-      '77002', '77003', '77004', '77005', '77006', '77007', '77008', '77009', '77010', '77011',
-      '77012', '77013', '77014', '77015', '77016', '77017', '77018', '77019', '77020', '77021',
-      '77022', '77023', '77024', '77025', '77026', '77027', '77028', '77029', '77030', '77031',
-      '77033', '77034', '77035', '77036', '77037', '77038', '77039', '77040', '77041', '77042',
-      '77043', '77044', '77045', '77046', '77047', '77048', '77049', '77050', '77051', '77053',
-      '77054', '77055', '77056', '77057', '77058', '77059', '77060', '77061', '77062', '77063',
-      '77064', '77065', '77066', '77067', '77068', '77069', '77070', '77071', '77072', '77073',
-      '77074', '77075', '77076', '77077', '77078', '77079', '77080', '77081', '77082', '77083',
-      '77084', '77085', '77086', '77087', '77088', '77089', '77090', '77091', '77092', '77093',
-      '77094', '77095', '77096', '77098', '77099',
-    ]
-  },
-  'PHOENIX': {
-    name: 'Phoenix Metro',
-    multiplier: 1.05,
-    zips: [
-      '85001', '85003', '85004', '85006', '85007', '85008', '85009', '85012', '85013', '85014',
-      '85015', '85016', '85017', '85018', '85019', '85020', '85021', '85022', '85023', '85024',
-      '85027', '85028', '85029', '85031', '85032', '85033', '85034', '85035', '85037', '85040',
-      '85041', '85042', '85043', '85044', '85045', '85048', '85050', '85051', '85053', '85054',
-      '85083', '85085', '85086', '85087',
-      // Scottsdale premium
-      '85250', '85251', '85253', '85254', '85255', '85256', '85257', '85258', '85259', '85260',
-      '85261', '85262', '85263', '85264', '85266', '85268',
-    ]
-  },
+// Tier 1: Super Premium Markets (+0.4 to multiple)
+const TIER_1_ZIPS: Record<string, string> = {
+  // New York City Metro
+  '10001': 'New York City', '10002': 'New York City', '10003': 'New York City', '10004': 'New York City',
+  '10005': 'New York City', '10006': 'New York City', '10007': 'New York City', '10008': 'New York City',
+  '10009': 'New York City', '10010': 'New York City', '10011': 'New York City', '10012': 'New York City',
+  '10013': 'New York City', '10014': 'New York City', '10016': 'New York City', '10017': 'New York City',
+  '10018': 'New York City', '10019': 'New York City', '10020': 'New York City', '10021': 'New York City',
+  '10022': 'New York City', '10023': 'New York City', '10024': 'New York City', '10025': 'New York City',
+  '10026': 'New York City', '10027': 'New York City', '10028': 'New York City', '10029': 'New York City',
+  '10030': 'New York City', '10031': 'New York City', '10032': 'New York City', '10033': 'New York City',
+  '10034': 'New York City', '10035': 'New York City', '10036': 'New York City', '10037': 'New York City',
+  '10038': 'New York City', '10039': 'New York City', '10040': 'New York City', '10044': 'New York City',
+  '10065': 'New York City', '10075': 'New York City', '10128': 'New York City', '10280': 'New York City',
+  // Brooklyn
+  '11201': 'Brooklyn', '11205': 'Brooklyn', '11206': 'Brooklyn', '11211': 'Brooklyn', '11215': 'Brooklyn',
+  '11217': 'Brooklyn', '11222': 'Brooklyn', '11231': 'Brooklyn', '11238': 'Brooklyn', '11249': 'Brooklyn',
+  // San Francisco Bay Area
+  '94102': 'San Francisco', '94103': 'San Francisco', '94104': 'San Francisco', '94105': 'San Francisco',
+  '94107': 'San Francisco', '94108': 'San Francisco', '94109': 'San Francisco', '94110': 'San Francisco',
+  '94111': 'San Francisco', '94112': 'San Francisco', '94114': 'San Francisco', '94115': 'San Francisco',
+  '94116': 'San Francisco', '94117': 'San Francisco', '94118': 'San Francisco', '94121': 'San Francisco',
+  '94122': 'San Francisco', '94123': 'San Francisco', '94124': 'San Francisco', '94127': 'San Francisco',
+  '94129': 'San Francisco', '94131': 'San Francisco', '94132': 'San Francisco', '94133': 'San Francisco',
+  // Palo Alto / Silicon Valley
+  '94301': 'Palo Alto', '94302': 'Palo Alto', '94303': 'Palo Alto', '94304': 'Palo Alto', '94305': 'Palo Alto',
+  '94040': 'Mountain View', '94041': 'Mountain View', '94043': 'Mountain View',
+  '95014': 'Cupertino', '95030': 'Los Gatos', '95070': 'Saratoga',
+  // Los Angeles Premium
+  '90210': 'Beverly Hills', '90211': 'Beverly Hills', '90212': 'Beverly Hills',
+  '90024': 'Westwood', '90025': 'West LA', '90049': 'Brentwood', '90077': 'Bel Air',
+  '90272': 'Pacific Palisades', '90291': 'Venice', '90292': 'Marina del Rey',
+  '90401': 'Santa Monica', '90402': 'Santa Monica', '90403': 'Santa Monica', '90404': 'Santa Monica',
+  // Orange County Coastal
+  '92625': 'Corona del Mar', '92660': 'Newport Beach', '92661': 'Newport Beach', '92662': 'Newport Beach',
+  '92651': 'Laguna Beach', '92652': 'Laguna Beach', '92657': 'Newport Coast',
+  '92603': 'Irvine', '92604': 'Irvine', '92612': 'Irvine', '92614': 'Irvine', '92618': 'Irvine', '92620': 'Irvine',
+  // Seattle Premium
+  '98101': 'Seattle', '98102': 'Seattle', '98103': 'Seattle', '98104': 'Seattle', '98105': 'Seattle',
+  '98109': 'Seattle', '98112': 'Seattle', '98119': 'Seattle', '98121': 'Seattle', '98122': 'Seattle',
+  '98004': 'Bellevue', '98005': 'Bellevue', '98006': 'Bellevue', '98039': 'Medina',
+  // Boston Premium
+  '02108': 'Boston', '02109': 'Boston', '02110': 'Boston', '02111': 'Boston', '02116': 'Boston',
+  '02199': 'Boston', '02210': 'Boston', '02215': 'Boston',
+  '02138': 'Cambridge', '02139': 'Cambridge', '02140': 'Cambridge', '02141': 'Cambridge',
+  // Washington DC
+  '20001': 'Washington DC', '20002': 'Washington DC', '20003': 'Washington DC', '20004': 'Washington DC',
+  '20005': 'Washington DC', '20006': 'Washington DC', '20007': 'Washington DC', '20008': 'Washington DC',
+  '20009': 'Washington DC', '20010': 'Washington DC', '20011': 'Washington DC', '20015': 'Washington DC',
+  '20016': 'Washington DC', '20036': 'Washington DC', '20037': 'Washington DC',
+  '22101': 'McLean', '22102': 'McLean', '22182': 'Vienna', '20814': 'Bethesda', '20815': 'Bethesda',
+  // Chicago Premium
+  '60601': 'Chicago Loop', '60602': 'Chicago Loop', '60603': 'Chicago Loop', '60604': 'Chicago Loop',
+  '60605': 'South Loop', '60606': 'West Loop', '60607': 'West Loop', '60610': 'Gold Coast',
+  '60611': 'Streeterville', '60614': 'Lincoln Park', '60622': 'Wicker Park', '60654': 'River North',
+  '60657': 'Lakeview', '60661': 'Loop',
+  // Miami Premium
+  '33109': 'Miami Beach', '33139': 'South Beach', '33140': 'Miami Beach', '33141': 'Miami Beach',
+  '33131': 'Brickell', '33132': 'Downtown Miami', '33133': 'Coconut Grove', '33146': 'Coral Gables',
+  // Las Vegas Premium
+  '89101': 'Las Vegas', '89102': 'Las Vegas', '89109': 'Las Vegas Strip', '89119': 'Paradise',
+  '89134': 'Summerlin', '89135': 'Summerlin', '89144': 'Summerlin', '89145': 'Summerlin',
 };
 
+// Tier 2: Large Metro Areas (+0.2 to multiple)
+const TIER_2_ZIPS: Record<string, string> = {
+  // San Diego
+  '92101': 'San Diego', '92102': 'San Diego', '92103': 'San Diego', '92104': 'San Diego',
+  '92106': 'Point Loma', '92107': 'Ocean Beach', '92109': 'Pacific Beach', '92037': 'La Jolla',
+  '92014': 'Del Mar', '92024': 'Encinitas', '92075': 'Solana Beach',
+  // Austin
+  '78701': 'Austin', '78702': 'Austin', '78703': 'Austin', '78704': 'Austin', '78705': 'Austin',
+  '78731': 'Austin', '78746': 'Westlake Hills', '78756': 'Austin', '78757': 'Austin',
+  // Denver
+  '80202': 'Denver', '80203': 'Denver', '80204': 'Denver', '80205': 'Denver', '80206': 'Denver',
+  '80209': 'Denver', '80210': 'Denver', '80211': 'Denver', '80212': 'Denver',
+  '80220': 'Denver', '80222': 'Denver', '80246': 'Cherry Creek',
+  // Atlanta
+  '30303': 'Atlanta', '30305': 'Buckhead', '30306': 'Virginia-Highland', '30307': 'Inman Park',
+  '30308': 'Midtown', '30309': 'Midtown', '30318': 'West Midtown', '30324': 'Buckhead',
+  '30326': 'Buckhead', '30327': 'Buckhead', '30342': 'Buckhead',
+  // Dallas
+  '75201': 'Dallas', '75202': 'Dallas', '75204': 'Uptown', '75205': 'Highland Park',
+  '75206': 'Lakewood', '75209': 'Oak Lawn', '75219': 'Turtle Creek', '75225': 'University Park',
+  // Houston
+  '77002': 'Houston', '77003': 'Houston', '77004': 'Montrose', '77005': 'West University',
+  '77006': 'Montrose', '77007': 'Heights', '77008': 'Heights', '77019': 'River Oaks',
+  '77024': 'Memorial', '77027': 'Galleria', '77056': 'Galleria', '77057': 'Galleria',
+  // Phoenix / Scottsdale
+  '85251': 'Scottsdale', '85253': 'Paradise Valley', '85254': 'Scottsdale', '85255': 'Scottsdale',
+  '85257': 'Scottsdale', '85258': 'Scottsdale', '85260': 'Scottsdale', '85262': 'Scottsdale',
+  // Nashville
+  '37201': 'Nashville', '37203': 'Nashville', '37204': 'Nashville', '37205': 'Belle Meade',
+  '37206': 'East Nashville', '37209': 'The Nations', '37212': 'Midtown', '37215': 'Green Hills',
+  // Charlotte
+  '28202': 'Charlotte', '28203': 'Charlotte', '28204': 'Charlotte', '28205': 'Charlotte',
+  '28207': 'Myers Park', '28209': 'Myers Park', '28210': 'SouthPark', '28211': 'SouthPark',
+  // Portland
+  '97201': 'Portland', '97202': 'Portland', '97204': 'Downtown Portland', '97205': 'Pearl District',
+  '97209': 'Pearl District', '97210': 'Northwest Portland', '97212': 'Irvington', '97214': 'Hawthorne',
+  // Minneapolis
+  '55401': 'Minneapolis', '55402': 'Minneapolis', '55403': 'Minneapolis', '55404': 'Minneapolis',
+  '55405': 'Minneapolis', '55408': 'Uptown', '55410': 'Lake Harriet', '55416': 'Edina',
+  // Philadelphia
+  '19102': 'Philadelphia', '19103': 'Philadelphia', '19106': 'Society Hill', '19107': 'Washington Square',
+  '19123': 'Northern Liberties', '19130': 'Fairmount', '19146': 'Graduate Hospital', '19147': 'Queen Village',
+  // San Jose
+  '95110': 'San Jose', '95112': 'San Jose', '95113': 'San Jose', '95125': 'Willow Glen', '95126': 'San Jose',
+};
+
+// City name matching for broader coverage
+const TIER_1_CITIES = new Set([
+  'new york', 'nyc', 'manhattan', 'brooklyn', 'san francisco', 'palo alto', 'cupertino',
+  'mountain view', 'menlo park', 'beverly hills', 'santa monica', 'bel air', 'malibu',
+  'newport beach', 'laguna beach', 'corona del mar', 'seattle', 'bellevue', 'boston',
+  'cambridge', 'washington dc', 'dc', 'mclean', 'bethesda', 'chicago', 'miami beach',
+  'south beach', 'brickell', 'coral gables', 'las vegas', 'summerlin'
+]);
+
+const TIER_2_CITIES = new Set([
+  'san diego', 'la jolla', 'del mar', 'austin', 'denver', 'atlanta', 'buckhead',
+  'dallas', 'highland park', 'houston', 'river oaks', 'scottsdale', 'paradise valley',
+  'nashville', 'charlotte', 'portland', 'minneapolis', 'philadelphia', 'san jose',
+  'los angeles', 'irvine', 'pasadena', 'long beach', 'oakland', 'honolulu',
+  'phoenix', 'tampa', 'st petersburg', 'fort lauderdale', 'west palm beach',
+  'raleigh', 'durham', 'salt lake city', 'indianapolis', 'columbus', 'cincinnati',
+  'pittsburgh', 'cleveland', 'detroit', 'baltimore', 'milwaukee', 'kansas city',
+  'st louis', 'new orleans', 'orlando', 'jacksonville', 'memphis', 'louisville',
+  'oklahoma city', 'tucson', 'albuquerque', 'sacramento', 'fresno', 'mesa',
+  'omaha', 'colorado springs', 'virginia beach', 'reno', 'boise'
+]);
+
 /**
- * Get location multiplier based on ZIP code
- * Returns 1.0 (baseline) if ZIP not found in premium markets
+ * Get location tier based on ZIP code or city name
+ * Returns tier (1-4) and multiplier adjustment
  */
-export function getLocationMultiplier(zipCode: string): {
-  multiplier: number;
-  areaName: string;
-  isPremuim: boolean;
-} {
-  // Normalize ZIP (remove spaces, dashes)
-  const cleanZip = zipCode.trim().replace(/[-\s]/g, '').slice(0, 5);
+export function getLocationTier(input: string): LocationTierResult {
+  const cleanInput = input.trim().toLowerCase();
   
-  // Search through all metro areas
-  for (const [key, metro] of Object.entries(METRO_MULTIPLIERS)) {
-    if (metro.zips.includes(cleanZip)) {
+  // Check if it's a ZIP code (5 digits)
+  const zipMatch = cleanInput.match(/^\d{5}/);
+  if (zipMatch) {
+    const zip = zipMatch[0];
+    
+    // Check Tier 1 ZIPs
+    if (TIER_1_ZIPS[zip]) {
       return {
-        multiplier: metro.multiplier,
-        areaName: metro.name,
-        isPremuim: true
+        tier: 1,
+        areaName: TIER_1_ZIPS[zip],
+        multiplierAdjustment: 0.4
+      };
+    }
+    
+    // Check Tier 2 ZIPs
+    if (TIER_2_ZIPS[zip]) {
+      return {
+        tier: 2,
+        areaName: TIER_2_ZIPS[zip],
+        multiplierAdjustment: 0.2
       };
     }
   }
   
-  // Default: no premium
+  // Check city name matching
+  const cityLower = cleanInput.replace(/[,\d]/g, '').trim();
+  
+  // Check Tier 1 cities
+  for (const city of TIER_1_CITIES) {
+    if (cityLower.includes(city)) {
+      return {
+        tier: 1,
+        areaName: city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        multiplierAdjustment: 0.4
+      };
+    }
+  }
+  
+  // Check Tier 2 cities
+  for (const city of TIER_2_CITIES) {
+    if (cityLower.includes(city)) {
+      return {
+        tier: 2,
+        areaName: city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        multiplierAdjustment: 0.2
+      };
+    }
+  }
+  
+  // Default: Tier 3 (neutral market)
   return {
-    multiplier: 1.0,
+    tier: 3,
     areaName: 'Standard Market',
-    isPremuim: false
+    multiplierAdjustment: 0
   };
 }
 
 /**
- * Calculate dollar amount of location premium
+ * Legacy function for backwards compatibility
+ * @deprecated Use getLocationTier instead
  */
 export function calculateLocationPremium(baseValue: number, zipCode: string): {
   premium: number;
   multiplier: number;
   areaName: string;
 } {
-  const { multiplier, areaName } = getLocationMultiplier(zipCode);
+  const tierResult = getLocationTier(zipCode);
+  // Convert tier adjustment to legacy multiplier format
+  const multiplier = 1 + (tierResult.multiplierAdjustment * 0.5); // Scale adjustment to percentage
   const premium = baseValue * (multiplier - 1.0);
   
   return {
     premium: Math.round(premium),
     multiplier,
-    areaName
+    areaName: tierResult.areaName
   };
 }

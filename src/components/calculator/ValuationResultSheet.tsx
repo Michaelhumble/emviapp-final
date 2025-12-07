@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { formatCurrency, type ValuationResult } from '@/lib/valuation';
+import { formatCurrency, getMultipleExplanation, type ValuationResult, type ValuationInputs } from '@/lib/valuation';
 import AnimatedNumber from '@/components/customer/AnimatedNumber';
 import { 
   CheckCircle2, 
@@ -19,7 +19,6 @@ import {
   Calculator,
   MapPin,
   Star,
-  Calendar,
   Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -27,7 +26,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface ValuationResultSheetProps {
   result: ValuationResult;
-  inputs: any;
+  inputs: ValuationInputs;
   onListClick: () => void;
 }
 
@@ -57,6 +56,9 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
 
   const displayValue = getDisplayValue();
 
+  // Get multiple explanations
+  const multipleExplanations = result.breakdown ? getMultipleExplanation(result.breakdown) : [];
+
   // Share functionality
   const handleShare = async () => {
     const shareData = {
@@ -73,7 +75,6 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
         // User cancelled or error
       }
     } else {
-      // Fallback: copy to clipboard
       await navigator.clipboard.writeText(
         `${shareData.text}\nCalculate yours: ${shareData.url}`
       );
@@ -98,14 +99,15 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
       await supabase.from('valuation_leads').insert({
         email,
         monthly_revenue: inputs.monthlyRevenue,
-        number_of_stations: inputs.numberOfStations,
-        zip_code: inputs.zipCode,
-        lease_length: inputs.leaseLength,
+        number_of_stations: inputs.numberOfStations || 0,
+        zip_code: inputs.location || '',
+        lease_length: inputs.leaseYearsRemaining ? 
+          (inputs.leaseYearsRemaining >= 3 ? 'long-term' : 'short-term') : 'long-term',
         google_rating: inputs.googleRating,
         google_review_count: inputs.googleReviewCount,
         calculated_value_low: result.low,
         calculated_value_high: result.high,
-        calculation_breakdown: result.breakdown,
+        calculation_breakdown: result.breakdown as any,
         user_id: user?.id,
       });
       
@@ -113,6 +115,7 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
       localStorage.setItem('lastValuation', JSON.stringify({
         low: result.low,
         high: result.high,
+        base: result.base,
         timestamp: Date.now()
       }));
 
@@ -162,7 +165,7 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
           </div>
           <p className="text-sm text-muted-foreground mt-3">
             {rangeType === 'conservative' && 'Quick sale estimate'}
-            {rangeType === 'likely' && 'Based on real market data'}
+            {rangeType === 'likely' && 'Based on SDE methodology'}
             {rangeType === 'high' && 'Premium market positioning'}
           </p>
         </div>
@@ -172,15 +175,15 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
       <div className="flex flex-wrap justify-center gap-3 py-4">
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium">
           <CheckCircle2 className="w-4 h-4" />
-          Real Comps
+          SDE Method
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
           <TrendingUp className="w-4 h-4" />
-          No Broker Fee
+          {result.breakdown?.finalMultiple}× Multiple
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm font-medium">
-          <CheckCircle2 className="w-4 h-4" />
-          IBBA Standards
+          <MapPin className="w-4 h-4" />
+          Tier {result.breakdown?.locationTier}
         </div>
       </div>
 
@@ -195,33 +198,34 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
           </AccordionTrigger>
           <AccordionContent className="space-y-4 pt-4">
             <div className="space-y-3">
+              {/* Annual SDE */}
               <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                <span className="text-sm">Revenue Multiple (2.5×)</span>
-                <span className="font-bold tabular-nums">{formatCurrency(result.breakdown.revenueMultiple)}</span>
+                <span className="text-sm">Annual Profit (SDE)</span>
+                <span className="font-bold tabular-nums">{formatCurrency(result.breakdown?.annualSDE || 0)}</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                <span className="text-sm">Station Value</span>
-                <span className="font-bold tabular-nums">{formatCurrency(result.breakdown.stationValue)}</span>
+              
+              {/* Multiple Breakdown */}
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="text-sm font-medium text-purple-800 mb-2">Multiple Breakdown</div>
+                <ul className="space-y-1 text-sm text-purple-700">
+                  {multipleExplanations.map((exp, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-purple-500">•</span>
+                      {exp}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              {result.breakdown.locationAdjustment > 0 && (
-                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    Location Premium
-                  </span>
-                  <span className="font-bold text-green-600 tabular-nums">
-                    +{formatCurrency(result.breakdown.locationAdjustment)}
-                  </span>
-                </div>
-              )}
-              {result.breakdown.reviewsAdjustment > 0 && (
+
+              {/* Assets */}
+              {result.breakdown?.assetsAdded > 0 && (
                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                   <span className="text-sm flex items-center gap-2">
                     <Star className="w-4 h-4" />
-                    Reputation Boost
+                    Physical Assets
                   </span>
                   <span className="font-bold text-green-600 tabular-nums">
-                    +{formatCurrency(result.breakdown.reviewsAdjustment)}
+                    +{formatCurrency(result.breakdown.assetsAdded)}
                   </span>
                 </div>
               )}
@@ -233,21 +237,26 @@ export const ValuationResultSheet: React.FC<ValuationResultSheetProps> = ({
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold">Market Comparison</span>
+              <span className="font-semibold">Location Analysis</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="pt-4">
             <div className="space-y-3">
               <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-sm text-muted-foreground mb-1">Market Average</div>
-                <div className="text-2xl font-bold tabular-nums">$125,000</div>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-sm text-green-700 mb-1">Your Position</div>
-                <div className="text-2xl font-bold text-green-600 tabular-nums">
-                  {((result.base / 125000 - 1) * 100).toFixed(1)}% {result.base > 125000 ? 'Above' : 'Below'}
+                <div className="text-sm text-muted-foreground mb-1">Your Market</div>
+                <div className="text-xl font-bold">{result.breakdown?.locationAreaName || 'Standard Market'}</div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Tier {result.breakdown?.locationTier} Market
                 </div>
               </div>
+              {result.breakdown?.locationAdjustment > 0 && (
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-sm text-green-700 mb-1">Location Premium</div>
+                  <div className="text-2xl font-bold text-green-600 tabular-nums">
+                    +{(result.breakdown.locationAdjustment * 100).toFixed(0)}% to multiple
+                  </div>
+                </div>
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>
