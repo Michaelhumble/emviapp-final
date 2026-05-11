@@ -151,6 +151,9 @@ const Index = () => {
         <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-slate-900 mb-8">Nail & Beauty Jobs</h2>
         <JobsCallToAction />
       </section>
+
+      {/* 1.55 Hiring in your city — internal-linking module for SEO + UX */}
+      <HiringInYourCity />
       
       {/* Quick Action Buttons for Testing */}
       <QuickActionButtons />
