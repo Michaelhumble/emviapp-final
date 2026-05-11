@@ -71,7 +71,22 @@ const JobsPageSEO: React.FC<JobsPageSEOProps> = ({
     }))
   };
 
-  const structuredData = [itemListSchema, jobCollectionSchema];
+  // BreadcrumbList — helps Google place /jobs in the site hierarchy
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": `${categoryText.trim()} Jobs${locationText}`,
+        "item": `${baseUrl}/jobs`,
+      },
+    ],
+  };
+
+  const structuredData = [itemListSchema, jobCollectionSchema, breadcrumbSchema];
 
   return (
     <ComprehensiveSEO
