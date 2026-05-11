@@ -12,7 +12,14 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-const SITE = Deno.env.get("GSC_SITE_URL") || "https://www.emvi.app/";
+let SITE = Deno.env.get("GSC_SITE_URL") || "https://www.emvi.app/";
+const SITE_CANDIDATES = [
+  "sc-domain:emvi.app",
+  "https://www.emvi.app/",
+  "https://emvi.app/",
+  "https://www.emvi.app",
+  "https://emvi.app",
+];
 const SITEMAPS = [
   "https://www.emvi.app/sitemap.xml",
   "https://www.emvi.app/jobs-sitemap.xml",
@@ -190,6 +197,28 @@ async function buildReport() {
   let smGsc: any[] = [];
   const errors: Record<string, string> = {};
 
+  let resolvedSite = SITE;
+  let sitesAvailable: string[] = [];
+  if (auth.token) {
+    // List sites the service account has access to and pick best match
+    try {
+      const sr = await fetch("https://searchconsole.googleapis.com/webmasters/v3/sites", {
+        headers: { Authorization: `Bearer ${auth.token}` },
+      });
+      if (sr.ok) {
+        const sj = await sr.json();
+        sitesAvailable = (sj.siteEntry || []).map((s: any) => s.siteUrl);
+        const pick =
+          SITE_CANDIDATES.find((c) => sitesAvailable.includes(c)) ||
+          sitesAvailable.find((s) => s.includes("emvi.app"));
+        if (pick) {
+          resolvedSite = pick;
+          SITE = pick;
+        }
+      }
+    } catch (_) { /* ignore */ }
+  }
+
   if (auth.token) {
     const base = { startDate: iso(start), endDate: iso(end), rowLimit: 1000 };
     const basePrev = { startDate: iso(prevStart), endDate: iso(prevEnd), rowLimit: 1000 };
@@ -230,6 +259,7 @@ async function buildReport() {
   lines.push(`# EmviApp Weekly SEO Report`);
   lines.push(`_Generated ${iso(today)} · Window: ${iso(start)} → ${iso(end)} vs ${iso(prevStart)} → ${iso(prevEnd)}_`);
   lines.push(`_Auth source: **${auth.source}** · ${auth.token ? "✅ authenticated" : "❌ " + (auth.error || "no token")}_`);
+  lines.push(`_GSC property used: \`${resolvedSite}\` · Sites accessible to service account: ${sitesAvailable.length ? sitesAvailable.map((s) => `\`${s}\``).join(", ") : "_none_"}_`);
   lines.push("");
 
   const totals = pages.reduce((a, p) => ({ clicks: a.clicks + p.clicks, impr: a.impr + p.impressions }), { clicks: 0, impr: 0 });
@@ -303,6 +333,7 @@ async function buildReport() {
 
   const summary = {
     auth: { source: auth.source, ok: !!auth.token, error: auth.error || null },
+    site: { resolved: resolvedSite, accessible: sitesAvailable },
     window: { current: { start: iso(start), end: iso(end) }, previous: { start: iso(prevStart), end: iso(prevEnd) } },
     sections: {
       "1_headline": { clicks: totals.clicks, impressions: totals.impr, indexedPages, indexedJobs, prevClicks: prevTotals.clicks, prevImpressions: prevTotals.impr },
