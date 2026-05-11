@@ -43,7 +43,7 @@ import TrustBadges from "@/components/home/trust/TrustBadges";
 import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 import PartnerLogos from "@/components/home/trust/PartnerLogos";
 
-import PressTrustBar from "@/components/marketing/PressTrustBar";
+
 import { isFeatureEnabled } from "@/config/premiumFeatures";
 
 const Index = () => {
