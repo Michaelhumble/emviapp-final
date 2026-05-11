@@ -83,6 +83,10 @@ export default function SpecialtyCityLanding() {
     ]
   };
 
+  // Conservative noindex: only when this programmatic page has zero matching
+  // artists. Keeps any page with real content + impressions indexable.
+  const shouldNoIndex = count === 0;
+
   return (
     <Layout>
       <Helmet>
@@ -90,6 +94,7 @@ export default function SpecialtyCityLanding() {
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
+        {shouldNoIndex && <meta name="robots" content="noindex,follow" />}
       </Helmet>
       <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
