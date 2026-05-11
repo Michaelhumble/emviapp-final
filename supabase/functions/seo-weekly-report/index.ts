@@ -259,6 +259,7 @@ async function buildReport() {
   lines.push(`# EmviApp Weekly SEO Report`);
   lines.push(`_Generated ${iso(today)} · Window: ${iso(start)} → ${iso(end)} vs ${iso(prevStart)} → ${iso(prevEnd)}_`);
   lines.push(`_Auth source: **${auth.source}** · ${auth.token ? "✅ authenticated" : "❌ " + (auth.error || "no token")}_`);
+  lines.push(`_GSC property used: \`${resolvedSite}\` · Sites accessible to service account: ${sitesAvailable.length ? sitesAvailable.map((s) => `\`${s}\``).join(", ") : "_none_"}_`);
   lines.push("");
 
   const totals = pages.reduce((a, p) => ({ clicks: a.clicks + p.clicks, impr: a.impr + p.impressions }), { clicks: 0, impr: 0 });
