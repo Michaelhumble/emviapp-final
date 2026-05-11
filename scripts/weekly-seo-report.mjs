@@ -242,7 +242,7 @@ async function main() {
   lines.push(fmtRow(['Sitemap', 'HTTP', 'URLs', 'Last-mod']));
   lines.push(fmtRow(['---', '---', '---', '---']));
   for (const s of sitemapsLive) {
-    lines.push(fmtRow([s.url, s.status, s.urls ?? '—', s.lastmod || '—']));
+    lines.push(fmtRow([s.url, s.status, `${s.urls ?? '—'} (${s.kind || '—'})`, s.lastmod || '—']));
   }
   if (smGsc.length) {
     lines.push('');
