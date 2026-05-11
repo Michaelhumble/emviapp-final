@@ -265,6 +265,7 @@ async function buildReport() {
   const totals = pages.reduce((a, p) => ({ clicks: a.clicks + p.clicks, impr: a.impr + p.impressions }), { clicks: 0, impr: 0 });
   const prevTotals = prevPages.reduce((a, p: any) => ({ clicks: a.clicks + (p.clicks || 0), impr: a.impr + (p.impressions || 0) }), { clicks: 0, impr: 0 });
   const indexedPages = pages.filter((p) => p.impressions > 0).length;
+  const indexedJobs = jobsPages.filter((p) => p.impressions > 0).length;
   // Compute summary helpers (used by TL;DR + Section 1)
   const sortedByGain = [...pages].sort((a, b) => b.dImpr - a.dImpr);
   const sortedByLoss = [...pages].sort((a, b) => a.dImpr - b.dImpr);
