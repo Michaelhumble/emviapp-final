@@ -265,7 +265,46 @@ async function buildReport() {
   const totals = pages.reduce((a, p) => ({ clicks: a.clicks + p.clicks, impr: a.impr + p.impressions }), { clicks: 0, impr: 0 });
   const prevTotals = prevPages.reduce((a, p: any) => ({ clicks: a.clicks + (p.clicks || 0), impr: a.impr + (p.impressions || 0) }), { clicks: 0, impr: 0 });
   const indexedPages = pages.filter((p) => p.impressions > 0).length;
-  const indexedJobs = jobsPages.filter((p) => p.impressions > 0).length;
+  // Compute summary helpers (used by TL;DR + Section 1)
+  const sortedByGain = [...pages].sort((a, b) => b.dImpr - a.dImpr);
+  const sortedByLoss = [...pages].sort((a, b) => a.dImpr - b.dImpr);
+  const biggestGainer = sortedByGain[0];
+  const biggestLoser = sortedByLoss[0];
+  const lowCtrPreview = pages
+    .filter((p) => p.impressions >= 50 && p.ctr < 0.01)
+    .sort((a, b) => b.impressions - a.impressions);
+
+  // Action items (data-driven, max 3)
+  const actionItems: string[] = [];
+  if (lowCtrPreview[0]) {
+    actionItems.push(`Rewrite title/meta for **${lowCtrPreview[0].key}** (${lowCtrPreview[0].impressions} impr, ${pct(lowCtrPreview[0].ctr)} CTR, pos ${lowCtrPreview[0].position.toFixed(1)}).`);
+  }
+  if (biggestLoser && biggestLoser.dImpr < -10) {
+    actionItems.push(`Investigate **${biggestLoser.key}** (Δ ${biggestLoser.dImpr} impressions) — check for indexing or ranking drop.`);
+  }
+  if (indexedJobs < 10) {
+    actionItems.push(`Only ${indexedJobs} \`/jobs/*\` pages have impressions — verify \`jobs-sitemap.xml\` coverage and JobPosting schema validity in GSC.`);
+  }
+  if (biggestGainer && biggestGainer.dImpr > 10 && biggestGainer.clicks === 0) {
+    actionItems.push(`**${biggestGainer.key}** is gaining impressions (+${biggestGainer.dImpr}) with 0 clicks — strengthen title/meta to capture clicks.`);
+  }
+  while (actionItems.length < 3) actionItems.push(`_No additional action item this week — continue monitoring._`);
+
+  // ===== TL;DR Summary =====
+  lines.push(`## 📊 Summary`, "");
+  lines.push(fmtRow(["Metric", "Value"]));
+  lines.push(fmtRow(["---", "---"]));
+  lines.push(fmtRow(["Total impressions", `${totals.impr} (${delta(totals.impr, prevTotals.impr) >= 0 ? "+" : ""}${delta(totals.impr, prevTotals.impr)} WoW)`]));
+  lines.push(fmtRow(["Total clicks", `${totals.clicks} (${delta(totals.clicks, prevTotals.clicks) >= 0 ? "+" : ""}${delta(totals.clicks, prevTotals.clicks)} WoW)`]));
+  lines.push(fmtRow(["/jobs/* impressions", jobsPages.reduce((a, p) => a + (p.impressions || 0), 0)]));
+  lines.push(fmtRow(["/jobs/* indexed (pages w/ impr)", indexedJobs]));
+  lines.push(fmtRow(["Biggest gaining page", biggestGainer ? `${biggestGainer.key} (Δ +${biggestGainer.dImpr} impr)` : "_n/a_"]));
+  lines.push(fmtRow(["Biggest losing page", biggestLoser ? `${biggestLoser.key} (Δ ${biggestLoser.dImpr} impr)` : "_n/a_"]));
+  lines.push("");
+  lines.push(`### Top 3 action items`, "");
+  actionItems.slice(0, 3).forEach((a, i) => lines.push(`${i + 1}. ${a}`));
+  lines.push("");
+
 
   lines.push(`## 1. Headline numbers`, "");
   lines.push(fmtRow(["Metric", "This week", "Last week", "Δ"]));
