@@ -12,7 +12,14 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-const SITE = Deno.env.get("GSC_SITE_URL") || "https://www.emvi.app/";
+let SITE = Deno.env.get("GSC_SITE_URL") || "https://www.emvi.app/";
+const SITE_CANDIDATES = [
+  "sc-domain:emvi.app",
+  "https://www.emvi.app/",
+  "https://emvi.app/",
+  "https://www.emvi.app",
+  "https://emvi.app",
+];
 const SITEMAPS = [
   "https://www.emvi.app/sitemap.xml",
   "https://www.emvi.app/jobs-sitemap.xml",
