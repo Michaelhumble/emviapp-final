@@ -197,6 +197,28 @@ async function buildReport() {
   let smGsc: any[] = [];
   const errors: Record<string, string> = {};
 
+  let resolvedSite = SITE;
+  let sitesAvailable: string[] = [];
+  if (auth.token) {
+    // List sites the service account has access to and pick best match
+    try {
+      const sr = await fetch("https://searchconsole.googleapis.com/webmasters/v3/sites", {
+        headers: { Authorization: `Bearer ${auth.token}` },
+      });
+      if (sr.ok) {
+        const sj = await sr.json();
+        sitesAvailable = (sj.siteEntry || []).map((s: any) => s.siteUrl);
+        const pick =
+          SITE_CANDIDATES.find((c) => sitesAvailable.includes(c)) ||
+          sitesAvailable.find((s) => s.includes("emvi.app"));
+        if (pick) {
+          resolvedSite = pick;
+          SITE = pick;
+        }
+      }
+    } catch (_) { /* ignore */ }
+  }
+
   if (auth.token) {
     const base = { startDate: iso(start), endDate: iso(end), rowLimit: 1000 };
     const basePrev = { startDate: iso(prevStart), endDate: iso(prevEnd), rowLimit: 1000 };
