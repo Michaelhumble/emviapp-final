@@ -26,22 +26,19 @@ function formatDate(d: string | Date) {
   return date.toISOString();
 }
 
-async function fetchActiveJobsUpdatedOn(dateStr?: string) {
+async function fetchActiveJobsUpdatedOn(_dateStr?: string) {
+  // NOTE: We intentionally ignore the date filter. The previous behavior
+  // returned only jobs whose updated_at fell on TODAY's UTC date, which
+  // produced an empty sitemap whenever no jobs were edited that day.
+  // Google needs a stable index of ALL currently-active job URLs.
   const nowIso = new Date().toISOString();
-  let query = supabase
+  const query = supabase
     .from('jobs')
     .select('id, updated_at, expires_at, status, title, location, category')
     .eq('status', 'active')
     .or('expires_at.is.null,expires_at.gt.' + nowIso)
     .order('updated_at', { ascending: false })
     .limit(50000);
-
-  if (dateStr) {
-    // Filter by updated_at date (UTC)
-    const start = new Date(dateStr + 'T00:00:00Z').toISOString();
-    const end = new Date(dateStr + 'T23:59:59Z').toISOString();
-    query = query.gte('updated_at', start).lte('updated_at', end);
-  }
 
   const { data, error } = await query;
   if (error) throw error;
