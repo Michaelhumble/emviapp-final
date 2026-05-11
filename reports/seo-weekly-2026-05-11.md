@@ -16,8 +16,8 @@ _Generated 2026-05-11 · Window: 2026-05-02 → 2026-05-08 vs 2026-04-25 → 202
 
 | Sitemap | HTTP | URLs | Last-mod |
 | --- | --- | --- | --- |
-| https://www.emvi.app/sitemap.xml | 200 | 0 | 2025-10-14 |
-| https://www.emvi.app/jobs-sitemap.xml | 200 | 0 | 2026-05-11T00:28:02.460Z |
+| https://www.emvi.app/sitemap.xml | 200 | 6 (index) | 2025-10-14 |
+| https://www.emvi.app/jobs-sitemap.xml | 200 | 1 (index) | 2026-05-11T00:28:24.519Z |
 
 > ⚠️ GSC sitemap registry not returned — verify sitemaps are submitted at https://search.google.com/search-console
 
