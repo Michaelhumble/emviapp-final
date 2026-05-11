@@ -91,11 +91,6 @@ const LazyIndex = () => {
         <TrustBadgeRow />
       </Suspense>
       
-      {/* Press marquee */}
-      <Suspense fallback={null}>
-        <PressMarquee />
-      </Suspense>
-      
       <div className="px-4">
         <CredibilityRibbon />
       </div>
