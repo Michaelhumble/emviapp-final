@@ -1,0 +1,74 @@
+name: Weekly SEO Report
+
+# Measurement-only. Runs the seo-weekly-report Supabase Edge Function,
+# saves the markdown to reports/seo-weekly-YYYY-MM-DD.md, and commits it.
+# - Does NOT change website pages.
+# - Does NOT create content.
+# - Does NOT submit URLs for indexing.
+on:
+  schedule:
+    # Every Monday at 13:00 UTC (~ Mon 06:00 PT / 09:00 ET / 20:00 ICT)
+    - cron: '0 13 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seo-weekly-report
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Call seo-weekly-report edge function
+        id: report
+        env:
+          SUPABASE_URL: https://wwhqbjrhbajpabfdwnip.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          DATE=$(date -u +%Y-%m-%d)
+          OUT="reports/seo-weekly-${DATE}.md"
+          echo "Calling edge function..."
+          HTTP_CODE=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            -X POST "${SUPABASE_URL}/functions/v1/seo-weekly-report" \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -d '{}')
+          echo "HTTP ${HTTP_CODE}"
+          if [ "${HTTP_CODE}" != "200" ]; then
+            echo "❌ Edge function call failed"
+            cat /tmp/resp.json || true
+            exit 1
+          fi
+          # Extract markdown field from JSON response
+          node -e "const r=require('/tmp/resp.json');if(!r.markdown){console.error('No markdown in response');process.exit(1);}require('fs').writeFileSync(process.env.OUT, r.markdown);" 
+          # Print summary to job log
+          node -e "const r=require('/tmp/resp.json');console.log(JSON.stringify(r.summary,null,2));"
+          echo "report_path=${OUT}" >> "$GITHUB_OUTPUT"
+          echo "report_date=${DATE}" >> "$GITHUB_OUTPUT"
+          ls -la "${OUT}"
+        shell: bash
+
+      - name: Commit report
+        env:
+          REPORT_PATH: ${{ steps.report.outputs.report_path }}
+          REPORT_DATE: ${{ steps.report.outputs.report_date }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${REPORT_PATH}"
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(seo): weekly report ${REPORT_DATE} [skip ci]"
+          git push
