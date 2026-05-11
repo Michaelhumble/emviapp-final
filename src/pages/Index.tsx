@@ -190,9 +190,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Press Coverage - As seen on */}
-      <PressTrustBar />
-      
       {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
