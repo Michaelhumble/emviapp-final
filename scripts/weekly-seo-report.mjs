@@ -160,7 +160,10 @@ async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
   await fs.mkdir(CACHE_DIR, { recursive: true });
 
-  const token = await getAccessToken();
+  const token = await getAccessToken().catch((e) => {
+    console.log('⚠️ GSC auth error, continuing sitemap-only:', e.message);
+    return null;
+  });
   const sitemapsLive = await Promise.all(SITEMAPS.map(checkSitemap));
 
   let pages = [], jobsPages = [], queries = [], lowCtr = [], smGsc = [];
