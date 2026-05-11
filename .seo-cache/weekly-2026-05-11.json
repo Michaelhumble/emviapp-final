@@ -1,0 +1,31 @@
+{
+  "window": {
+    "start": "2026-05-02",
+    "end": "2026-05-08"
+  },
+  "prev": {
+    "start": "2026-04-25",
+    "end": "2026-05-01"
+  },
+  "sitemapsLive": [
+    {
+      "url": "https://www.emvi.app/sitemap.xml",
+      "ok": true,
+      "status": 200,
+      "urls": 0,
+      "lastmod": "2025-10-14"
+    },
+    {
+      "url": "https://www.emvi.app/jobs-sitemap.xml",
+      "ok": true,
+      "status": 200,
+      "urls": 0,
+      "lastmod": "2026-05-11T00:28:02.460Z"
+    }
+  ],
+  "smGsc": [],
+  "pages": [],
+  "jobsPages": [],
+  "queries": [],
+  "lowCtr": []
+}
