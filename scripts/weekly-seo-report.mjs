@@ -121,9 +121,10 @@ async function checkSitemap(url) {
   try {
     const res = await fetch(url, { method: 'GET' });
     const text = res.ok ? await res.text() : '';
-    const urlCount = (text.match(/<url>/g) || []).length;
+    const isIndex = /<sitemapindex/.test(text);
+    const locCount = (text.match(/<loc>/g) || []).length;
     const lastmod = (text.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1] || null;
-    return { url, ok: res.ok, status: res.status, urls: urlCount, lastmod };
+    return { url, ok: res.ok, status: res.status, urls: locCount, kind: isIndex ? 'index' : 'urlset', lastmod };
   } catch (e) {
     return { url, ok: false, status: 0, error: String(e) };
   }
