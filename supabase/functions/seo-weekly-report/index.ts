@@ -333,6 +333,7 @@ async function buildReport() {
 
   const summary = {
     auth: { source: auth.source, ok: !!auth.token, error: auth.error || null },
+    site: { resolved: resolvedSite, accessible: sitesAvailable },
     window: { current: { start: iso(start), end: iso(end) }, previous: { start: iso(prevStart), end: iso(prevEnd) } },
     sections: {
       "1_headline": { clicks: totals.clicks, impressions: totals.impr, indexedPages, indexedJobs, prevClicks: prevTotals.clicks, prevImpressions: prevTotals.impr },
