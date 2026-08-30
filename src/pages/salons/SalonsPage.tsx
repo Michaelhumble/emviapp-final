@@ -35,7 +35,7 @@ const SalonsPage = () => {
       console.log("Fetching salons...");
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('*')
         .eq('role', 'salon')
         .order('created_at', { ascending: false });

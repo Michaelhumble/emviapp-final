@@ -14,7 +14,7 @@ const Artists = () => {
     const fetchArtists = async () => {
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('*')
           .in('role', ['artist', 'nail technician/artist'])
           .limit(20);

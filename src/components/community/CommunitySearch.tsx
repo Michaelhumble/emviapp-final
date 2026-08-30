@@ -80,7 +80,7 @@ const CommunitySearch: React.FC<CommunitySearchProps> = ({
         // Get user profiles separately
         const userIds = [...new Set((posts as any[]).map((post: any) => post.user_id))];
         const { data: profiles } = await supabaseBypass
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('id, full_name, avatar_url')
           .in('id', userIds);
 
@@ -102,7 +102,7 @@ const CommunitySearch: React.FC<CommunitySearchProps> = ({
 
       // Search users (profiles)
       const { data: profiles } = await supabaseBypass
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('id, full_name, avatar_url')
         .ilike('full_name', `%${searchQuery}%`)
         .limit(5);

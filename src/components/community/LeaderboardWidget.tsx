@@ -90,7 +90,7 @@ const LeaderboardWidget = () => {
       if (postsData) {
         const userIds = (postsData as any[]).map((post: any) => post.user_id);
         const { data: profiles } = await supabaseBypass
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('id, full_name, avatar_url')
           .in('id', userIds);
 

@@ -168,6 +168,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       admin_actions: {
@@ -923,6 +930,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       appointments: {
@@ -1029,6 +1043,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "artist_availability_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       artist_clients: {
@@ -1062,6 +1083,13 @@ export type Database = {
             columns: ["artist_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_clients_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1124,6 +1152,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_for_hire_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1239,6 +1274,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "artist_services_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       artist_time_off: {
@@ -1272,6 +1314,13 @@ export type Database = {
             columns: ["artist_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_time_off_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1534,6 +1583,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_rescheduled_from_id_fkey"
             columns: ["rescheduled_from_id"]
             isOneToOne: false
@@ -1545,6 +1601,13 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -2248,6 +2311,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_community_stories_profile"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       completed_bookings: {
@@ -2859,6 +2929,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       followers: {
@@ -3210,6 +3287,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "messages_salon_id_fkey"
             columns: ["salon_id"]
             isOneToOne: false
@@ -3221,6 +3305,13 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -5737,6 +5828,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string | null
@@ -6015,6 +6127,123 @@ export type Database = {
           pricing_tier: string | null
           sort_key: string | null
           title: string | null
+        }
+        Relationships: []
+      }
+      public_profiles: {
+        Row: {
+          accepts_bookings: boolean | null
+          available_for_hire: boolean | null
+          avatar_url: string | null
+          badges: Json | null
+          bio: string | null
+          booking_url: string | null
+          boosted_until: string | null
+          community_points: number | null
+          company_name: string | null
+          contact_link: string | null
+          created_at: string | null
+          creator_status: string | null
+          current_streak: number | null
+          custom_role: string | null
+          full_name: string | null
+          gallery: string[] | null
+          id: string | null
+          instagram: string | null
+          just_moved: boolean | null
+          location: string | null
+          looking_for_work: boolean | null
+          moved_to_city: string | null
+          moved_to_state: string | null
+          portfolio_urls: string[] | null
+          preferences: string[] | null
+          professional_name: string | null
+          profile_views: number | null
+          role: string | null
+          salon_name: string | null
+          services: string[] | null
+          specialty: string | null
+          total_likes_received: number | null
+          total_posts: number | null
+          total_shares: number | null
+          website: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          accepts_bookings?: boolean | null
+          available_for_hire?: boolean | null
+          avatar_url?: string | null
+          badges?: Json | null
+          bio?: string | null
+          booking_url?: string | null
+          boosted_until?: string | null
+          community_points?: number | null
+          company_name?: string | null
+          contact_link?: string | null
+          created_at?: string | null
+          creator_status?: string | null
+          current_streak?: number | null
+          custom_role?: string | null
+          full_name?: string | null
+          gallery?: string[] | null
+          id?: string | null
+          instagram?: string | null
+          just_moved?: boolean | null
+          location?: string | null
+          looking_for_work?: boolean | null
+          moved_to_city?: string | null
+          moved_to_state?: string | null
+          portfolio_urls?: string[] | null
+          preferences?: string[] | null
+          professional_name?: string | null
+          profile_views?: number | null
+          role?: string | null
+          salon_name?: string | null
+          services?: string[] | null
+          specialty?: string | null
+          total_likes_received?: number | null
+          total_posts?: number | null
+          total_shares?: number | null
+          website?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          accepts_bookings?: boolean | null
+          available_for_hire?: boolean | null
+          avatar_url?: string | null
+          badges?: Json | null
+          bio?: string | null
+          booking_url?: string | null
+          boosted_until?: string | null
+          community_points?: number | null
+          company_name?: string | null
+          contact_link?: string | null
+          created_at?: string | null
+          creator_status?: string | null
+          current_streak?: number | null
+          custom_role?: string | null
+          full_name?: string | null
+          gallery?: string[] | null
+          id?: string | null
+          instagram?: string | null
+          just_moved?: boolean | null
+          location?: string | null
+          looking_for_work?: boolean | null
+          moved_to_city?: string | null
+          moved_to_state?: string | null
+          portfolio_urls?: string[] | null
+          preferences?: string[] | null
+          professional_name?: string | null
+          profile_views?: number | null
+          role?: string | null
+          salon_name?: string | null
+          services?: string[] | null
+          specialty?: string | null
+          total_likes_received?: number | null
+          total_posts?: number | null
+          total_shares?: number | null
+          website?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
@@ -6320,6 +6549,13 @@ export type Database = {
       }
       has_great_feedback: { Args: { p_artist_id: string }; Returns: boolean }
       has_posted_free_job: { Args: { p_user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       increment_post_likes: { Args: { post_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_artist_available: {
@@ -6456,6 +6692,16 @@ export type Database = {
       }
     }
     Enums: {
+      app_role:
+        | "admin"
+        | "moderator"
+        | "salon_owner"
+        | "artist"
+        | "freelancer"
+        | "customer"
+        | "manager"
+        | "supplier"
+        | "other"
       application_status: "pending" | "accepted" | "rejected"
       booking_status: "pending" | "confirmed" | "canceled" | "completed"
       job_category:
@@ -6598,6 +6844,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: [
+        "admin",
+        "moderator",
+        "salon_owner",
+        "artist",
+        "freelancer",
+        "customer",
+        "manager",
+        "supplier",
+        "other",
+      ],
       application_status: ["pending", "accepted", "rejected"],
       booking_status: ["pending", "confirmed", "canceled", "completed"],
       job_category: [
