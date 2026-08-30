@@ -67,7 +67,7 @@ export const useCommunityData = () => {
       if (data && data.length > 0) {
         const userIds = [...new Set((data as any).map((post: any) => post?.user_id))];
         const { data: profilesData } = await supabaseBypass
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('id, full_name, avatar_url')
           .in('id', userIds as any);
 
@@ -106,7 +106,7 @@ export const useCommunityData = () => {
       if (data && data.length > 0) {
         const userIds = [...new Set((data as any).map((activity: any) => activity?.user_id))];
         const { data: profilesData } = await supabaseBypass
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('id, full_name, avatar_url')
           .in('id', userIds as any);
 
@@ -133,7 +133,7 @@ export const useCommunityData = () => {
   const fetchLeaderboard = async () => {
     try {
       const { data, error } = await supabaseBypass
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('id, full_name, avatar_url, community_points, total_posts, total_likes_received, total_shares, creator_status')
         .gt('community_points', 0)
         .order('community_points', { ascending: false })
