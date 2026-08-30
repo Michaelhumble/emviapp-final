@@ -44,7 +44,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ onCreatePost }) => {
         .from('community_posts')
         .select(`
           *,
-          profiles (
+          profiles:public_profiles (
             full_name,
             avatar_url
           )

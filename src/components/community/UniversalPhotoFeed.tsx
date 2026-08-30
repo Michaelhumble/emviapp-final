@@ -82,7 +82,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
         .from('community_stories')
         .select(`
           *,
-          profiles(full_name, avatar_url)
+          profiles:public_profiles(full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
