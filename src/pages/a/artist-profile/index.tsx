@@ -31,7 +31,7 @@ const ArtistProfilePage = () => {
   const fetchArtistProfile = async (artistId: string) => {
     try {
       const { data, error } = await supabase
-        .from('public_profiles' as any)
+        .from('profiles')
         .select('*')
         .eq('id', artistId)
         .single();
