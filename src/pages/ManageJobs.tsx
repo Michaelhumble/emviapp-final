@@ -72,10 +72,25 @@ const ManageJobs = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8">Manage Your Jobs</h1>
-        
-        {jobs.length === 0 ? (
+      <div className="container mx-auto py-8 px-4 max-w-3xl">
+        <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
+          <h1 className="text-3xl font-bold">Manage Your Jobs</h1>
+          <a
+            href="/post-job"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Post a job — Free
+          </a>
+        </div>
+
+        {!user ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Sign in to see the jobs you posted.</p>
+            <a href="/signin?redirect=%2Fmy-jobs" className="text-primary underline">
+              Sign in
+            </a>
+          </div>
+        ) : jobs.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">You haven't posted any jobs yet.</p>
           </div>
@@ -83,16 +98,31 @@ const ManageJobs = () => {
           <div className="space-y-4">
             {jobs.map((job) => (
               <div key={job.id} className="bg-white p-6 rounded-lg border shadow-sm">
-                <h3 className="text-xl font-semibold">{job.title}</h3>
-                <p className="text-gray-600">{job.location}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Posted: {new Date(job.created_at).toLocaleDateString()}
-                </p>
-                {job.category && (
-                  <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                    {job.category}
-                  </span>
-                )}
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div>
+                    <h3 className="text-xl font-semibold">{job.title}</h3>
+                    <p className="text-gray-600">{job.location}</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Posted: {new Date(job.created_at).toLocaleDateString()}
+                      {job.expires_at
+                        ? ` · Expires: ${new Date(job.expires_at).toLocaleDateString()}`
+                        : ''}
+                    </p>
+                    {job.category && (
+                      <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                        {job.category}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-3 text-sm">
+                    <a href={`/jobs/${job.id}`} className="text-primary underline">
+                      View
+                    </a>
+                    <a href={`/jobs/edit/${job.id}`} className="text-primary underline">
+                      Edit
+                    </a>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -101,5 +131,6 @@ const ManageJobs = () => {
     </Layout>
   );
 };
+
 
 export default ManageJobs;
