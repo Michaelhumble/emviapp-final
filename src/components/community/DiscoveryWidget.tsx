@@ -95,7 +95,7 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
 
       // Fetch user profiles
       const { data: profiles } = await supabaseBypass
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('id, full_name, avatar_url')
         .in('id', topUserIds);
 

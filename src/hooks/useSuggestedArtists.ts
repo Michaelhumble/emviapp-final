@@ -30,7 +30,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
           
           // Get artists with the same location
           query = supabaseBypass
-            .from('profiles')
+            .from('public_profiles' as any)
             .select('*')
             .in('role' as any, ['artist', 'freelancer', 'nail technician/artist'])
             .neq('avatar_url' as any, '')
@@ -73,7 +73,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
   // Helper function for fallback query
   const getFallbackQuery = (currentArtistId?: string) => {
     let query = supabaseBypass
-      .from('profiles')
+      .from('public_profiles' as any)
       .select('*')
       .in('role' as any, ['artist', 'freelancer', 'nail technician/artist'])
       .neq('full_name' as any, '')

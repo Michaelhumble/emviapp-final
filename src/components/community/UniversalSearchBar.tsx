@@ -70,7 +70,7 @@ const UniversalSearchBar: React.FC<Props> = ({ onResultClick, className = '' }) 
     try {
       // Search users (artists, customers, salons)
       const { data: users, error: usersError } = await supabaseBypass
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('id, full_name, avatar_url, role, location, specialty')
         .or(`full_name.ilike.%${searchQuery}%,specialty.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`)
         .limit(10);

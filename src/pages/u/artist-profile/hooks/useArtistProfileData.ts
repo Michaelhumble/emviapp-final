@@ -24,7 +24,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       
       // First try to find by username (instagram handle)
       let { data: userData, error: userError } = await supabase
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('*')
         .eq('instagram', username)
         .single();
@@ -32,7 +32,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       // If not found by username, try with ID
       if (userError || !userData) {
         const { data: idData, error: idError } = await supabase
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('*')
           .eq('id', username)
           .single();
