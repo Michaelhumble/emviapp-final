@@ -3126,6 +3126,7 @@ export type Database = {
           image_urls: string[] | null
           location: string | null
           metadata: Json | null
+          metadata_public: Json | null
           payment_status: string | null
           photos: string[] | null
           pricing_tier: string | null
@@ -3151,6 +3152,7 @@ export type Database = {
           image_urls?: string[] | null
           location?: string | null
           metadata?: Json | null
+          metadata_public?: Json | null
           payment_status?: string | null
           photos?: string[] | null
           pricing_tier?: string | null
@@ -3176,6 +3178,7 @@ export type Database = {
           image_urls?: string[] | null
           location?: string | null
           metadata?: Json | null
+          metadata_public?: Json | null
           payment_status?: string | null
           photos?: string[] | null
           pricing_tier?: string | null
