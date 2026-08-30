@@ -40,7 +40,7 @@ const SalonsPageRedesigned = lazy(() => import("@/pages/salons/SalonsPageRedesig
 const Jobs = lazy(() => import("@/pages/Jobs"));
 const OptimizedJobsPage = lazy(() => import("@/pages/OptimizedJobsPage"));
 const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
-const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
+const JobDetailOrCity = lazy(() => import("@/components/jobs/JobDetailOrCity"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
 const CityRoleJobLanding = lazy(() => import("@/pages/jobs/CityRoleJobLanding"));
