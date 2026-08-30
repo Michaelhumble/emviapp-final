@@ -171,7 +171,6 @@ const JobDetailPage = () => {
   const isExpired = !isActive;
   const isFilled = job.status === 'filled' || job.status === 'closed';
 
-  const photos = useMemo(() => normalizeJobPhotos(job), [job]);
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
