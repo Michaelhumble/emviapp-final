@@ -323,8 +323,8 @@ function App() {
                      
                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
+                     {/* Single dynamic segment: wrapper renders JobDetailPage for UUIDs, CityJobsLanding otherwise */}
+                     <Route path="/jobs/:cityState" element={<Layout><JobDetailOrCity /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
