@@ -28,4 +28,4 @@ export const PUBLIC_JOB_COLUMNS = [
   'image_urls',
   'photos',
   'seed_tag',
-].join(', ');
+].join(', ') as '*'; // cast keeps supabase-js row typing intact
