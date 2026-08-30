@@ -24,6 +24,9 @@ export const PUBLIC_JOB_COLUMNS = [
   'image_url',
   'vietnamese_title',
   'vietnamese_description',
+  // Raw `metadata` is not granted to anon (may contain poster PII). Select the
+  // sanitized `metadata_public` column aliased as `metadata` so existing
+  // components reading job.metadata.photos/image_urls keep working.
   'metadata:metadata_public',
   'image_urls',
   'photos',

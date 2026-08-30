@@ -22,7 +22,8 @@ import { SITE_BASE_URL } from '@/config/seo';
 import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const JobDetailPage = () => {
-  const { jobId } = useParams<{ jobId: string }>();
+  const params = useParams();
+  const jobId = params.jobId || params.id || params.cityState;
   const navigate = useNavigate();
   const location = useLocation();
   const { jobs, loading } = useOptimizedJobsData();
@@ -122,6 +123,10 @@ const JobDetailPage = () => {
     return jobDate > sevenDaysAgo;
   };
 
+  // Hooks must run before any early return (fixes "rendered more hooks" crash
+  // when a job resolves after the loading/not-found states).
+  const photos = useMemo(() => (job ? normalizeJobPhotos(job) : []), [job]);
+
   if (loading) {
     return <JobLoadingState />;
   }
@@ -166,7 +171,6 @@ const JobDetailPage = () => {
   const isExpired = !isActive;
   const isFilled = job.status === 'filled' || job.status === 'closed';
 
-  const photos = useMemo(() => normalizeJobPhotos(job), [job]);
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
