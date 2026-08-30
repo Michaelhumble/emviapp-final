@@ -7,6 +7,7 @@ import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useAuth } from '@/context/auth';
+import { useJobContactInfo } from '@/hooks/useJobContactInfo';
 
 import { isJobExpired, getDaysUntilExpiration } from '@/utils/jobExpiration';
 
