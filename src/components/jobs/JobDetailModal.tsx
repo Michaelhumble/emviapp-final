@@ -270,6 +270,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       else if (job.contact_info && typeof job.contact_info === 'object') {
                         contactInfo = job.contact_info;
                       }
+                      // Priority 2b: fetched on demand for signed-in users
+                      else if (fetchedContactInfo && typeof fetchedContactInfo === 'object') {
+                        contactInfo = fetchedContactInfo;
+                      }
                       // Priority 3: Build from root fields (fallback for old jobs)
                       else {
                         const fallbackContact: any = {};
