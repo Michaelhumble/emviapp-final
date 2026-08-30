@@ -78,6 +78,8 @@ const AuthPage = lazy(() => import("@/pages/auth/AuthPage"));
 const PremiumSignupPage = lazy(() => import("@/pages/auth/PremiumSignupPage"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const EnhancedPostJob = lazy(() => import("@/pages/enhanced-post-job"));
+const PostJobFree = lazy(() => import("@/pages/PostJobFree"));
+const ManageJobs = lazy(() => import("@/pages/ManageJobs"));
 const SellSalonPage = lazy(() => import("@/pages/sell-salon"));
 const PostSalon = lazy(() => import("@/pages/PostSalon"));
 const SalonWorth = lazy(() => import("@/pages/SalonWorth"));
