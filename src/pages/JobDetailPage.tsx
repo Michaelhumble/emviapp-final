@@ -22,7 +22,8 @@ import { SITE_BASE_URL } from '@/config/seo';
 import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const JobDetailPage = () => {
-  const { jobId } = useParams<{ jobId: string }>();
+  const params = useParams();
+  const jobId = params.jobId || params.id || params.cityState;
   const navigate = useNavigate();
   const location = useLocation();
   const { jobs, loading } = useOptimizedJobsData();
