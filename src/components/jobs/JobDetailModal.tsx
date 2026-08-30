@@ -19,6 +19,8 @@ interface JobDetailModalProps {
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onClose }) => {
   const { isSignedIn, user } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // contact_info is stripped from public job queries; signed-in users fetch it on demand
+  const fetchedContactInfo = useJobContactInfo(job?.id, Boolean(isSignedIn && isOpen && job?.id));
 
   // Ensure we have valid job data before rendering
   if (!job) {
