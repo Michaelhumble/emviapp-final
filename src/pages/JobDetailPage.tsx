@@ -123,6 +123,10 @@ const JobDetailPage = () => {
     return jobDate > sevenDaysAgo;
   };
 
+  // Hooks must run before any early return (fixes "rendered more hooks" crash
+  // when a job resolves after the loading/not-found states).
+  const photos = useMemo(() => (job ? normalizeJobPhotos(job) : []), [job]);
+
   if (loading) {
     return <JobLoadingState />;
   }
