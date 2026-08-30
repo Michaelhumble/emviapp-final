@@ -24,7 +24,7 @@ export const PUBLIC_JOB_COLUMNS = [
   'image_url',
   'vietnamese_title',
   'vietnamese_description',
-  'metadata',
+  'metadata:metadata_public',
   'image_urls',
   'photos',
   'seed_tag',
