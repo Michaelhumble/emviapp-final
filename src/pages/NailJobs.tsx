@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Phone, DollarSign, Clock, Building, Briefcase, Star, MessageSquare, Heart, TrendingUp, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const NailJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -32,7 +33,7 @@ const NailJobs = () => {
       try {
         const { data, error } = await supabase
           .from('jobs')
-          .select('*')
+          .select(PUBLIC_JOB_COLUMNS)
           .eq('category', 'nails')
           .eq('status', 'active')
           .eq('pricing_tier', 'premium') // Only show paid/premium jobs

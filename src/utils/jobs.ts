@@ -1,6 +1,7 @@
 
 import { Job } from '@/types/job';
 import { supabase } from '@/integrations/supabase/client';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 /**
  * Fetches a job from the database by ID
@@ -10,7 +11,7 @@ export const fetchJob = async (id: string): Promise<Job> => {
   
   const { data: job, error } = await supabase
     .from('jobs')
-    .select('*')
+    .select(PUBLIC_JOB_COLUMNS)
     .eq('id', id)
     .eq('status', 'active')
     .single();
@@ -59,7 +60,7 @@ export const fetchJobs = async (page: number = 1, limit: number = 9): Promise<{
   
   const { data: jobs, error, count } = await supabase
     .from('jobs')
-    .select('*', { count: 'exact' })
+    .select(PUBLIC_JOB_COLUMNS, { count: 'exact' })
     .eq('status', 'active')
     .order('created_at', { ascending: false })
     .range(start, start + limit - 1);

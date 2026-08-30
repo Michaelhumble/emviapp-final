@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { Job } from '@/types/job';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 interface RecommendationItem {
   id: string;
@@ -86,7 +87,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
 
   const getRecommendations = async (type: 'job' | 'salon' | 'artist', limit = 6): Promise<RecommendationItem[]> => {
     try {
-      let query = supabaseBypass.from('jobs').select('*');
+      let query = supabaseBypass.from('jobs').select(PUBLIC_JOB_COLUMNS);
       
       if (type === 'job') {
         query = query.neq('category', 'salon');
@@ -150,7 +151,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
       // Get the current item to find similar ones
       const { data: currentItem } = await supabaseBypass
         .from('jobs')
-        .select('*')
+        .select(PUBLIC_JOB_COLUMNS)
         .eq('id', itemId)
         .single();
 
@@ -159,7 +160,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
       // Find similar items by category and location
       let query = supabaseBypass
         .from('jobs')
-        .select('*')
+        .select(PUBLIC_JOB_COLUMNS)
         .neq('id', itemId)
         .eq('status', 'active');
 

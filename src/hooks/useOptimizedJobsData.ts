@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 
 import { useAuth } from '@/context/auth';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 // Optional feature flag: if explicitly false, disable FOMO and show active to everyone
 const getFomoEnabled = (): boolean | undefined => {
@@ -51,7 +52,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       let query = (supabase as any)
         .from('jobs')
-        .select('*')
+        .select(PUBLIC_JOB_COLUMNS)
         .eq('status' as any, 'active');
 
       // Always show active / fresh jobs for everyone

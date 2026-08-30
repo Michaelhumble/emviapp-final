@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Job } from '@/types/job';
 import { supabase } from '@/integrations/supabase/client';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 interface RelatedSalonsProps {
   currentSalon: Job;
@@ -22,7 +23,7 @@ const RelatedSalons: React.FC<RelatedSalonsProps> = ({ currentSalon, limit = 4 }
         
         const query = supabase
           .from('jobs')
-          .select('*')
+          .select(PUBLIC_JOB_COLUMNS)
           .eq('status', 'active')
           .eq('category', 'salon-for-sale')
           .neq('id', currentSalon.id)

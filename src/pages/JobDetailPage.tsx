@@ -19,6 +19,7 @@ import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/
 import { Helmet } from 'react-helmet-async';
 import { jobPostingJsonLd, type JobPostingData } from "@/lib/seo/jsonld";
 import { SITE_BASE_URL } from '@/config/seo';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -43,7 +44,7 @@ const JobDetailPage = () => {
       if (!job && jobId && !loading) {
         const { data } = await (supabaseBypass as any)
           .from('jobs')
-          .select('*')
+          .select(PUBLIC_JOB_COLUMNS)
           .eq('id', jobId)
           .maybeSingle();
         if (data) {
