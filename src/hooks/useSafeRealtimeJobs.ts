@@ -10,6 +10,7 @@ import { supabaseBypass } from '@/types/supabase-bypass';
 import { Job } from '@/types/job';
 import { connectRealtime, RealtimeHandle } from '@/lib/realtime/connect';
 import { isDevelopment, getDiagnosticInfo } from '@/lib/realtime/capabilities';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 interface UseSafeRealtimeJobsOptions {
   effectiveSignedIn: boolean;
@@ -32,7 +33,7 @@ export const useSafeRealtimeJobs = ({
       
       const { data: jobs, error } = await supabaseBypass
         .from('jobs')
-        .select('*')
+        .select(PUBLIC_JOB_COLUMNS)
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(100);

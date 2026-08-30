@@ -9,6 +9,7 @@ import BaseSEO from '@/components/seo/BaseSEO';
 import { buildJobPostingJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import { track } from '@/lib/telemetry';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const JobDetailDynamicPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,7 @@ const JobDetailDynamicPage: React.FC = () => {
       try {
         const { data, error } = await (supabase as any)
           .from('jobs')
-          .select('*')
+          .select(PUBLIC_JOB_COLUMNS)
           .eq('id', id)
           .maybeSingle();
         if (error) throw error;

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, DollarSign, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { track } from '@/lib/telemetry';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 interface WhatYouMissedSectionProps {
   title?: string;
@@ -31,7 +32,7 @@ const WhatYouMissedSection = ({
 
       const { data: jobsData, error } = await (supabaseBypass as any)
         .from('jobs')
-        .select('*')
+        .select(PUBLIC_JOB_COLUMNS)
         .eq('status' as any, 'active')
         .or(`expires_at.lte.${nowISO},and(expires_at.is.null,created_at.lte.${thirtyDaysAgoISO})`)
         .order('expires_at' as any, { ascending: false })

@@ -4,6 +4,7 @@ import { Job } from '@/types/job';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 import { deduplicateJobs } from '@/utils/jobDeduplication';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 export const useJobsData = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -20,7 +21,7 @@ export const useJobsData = () => {
       
       const { data: jobsData, error: fetchError, count } = await supabaseBypass
         .from('jobs')
-        .select('*', { count: 'exact' })
+        .select(PUBLIC_JOB_COLUMNS, { count: 'exact' })
         .eq('status' as any, 'active')
         .gte('expires_at' as any, new Date().toISOString())
         .order('created_at' as any, { ascending: false });

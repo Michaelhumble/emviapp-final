@@ -19,6 +19,7 @@ import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/
 import { Helmet } from 'react-helmet-async';
 import { jobPostingJsonLd, type JobPostingData } from "@/lib/seo/jsonld";
 import { SITE_BASE_URL } from '@/config/seo';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -43,7 +44,7 @@ const JobDetailPage = () => {
       if (!job && jobId && !loading) {
         const { data } = await (supabaseBypass as any)
           .from('jobs')
-          .select('*')
+          .select(PUBLIC_JOB_COLUMNS)
           .eq('id', jobId)
           .maybeSingle();
         if (data) {
@@ -407,7 +408,7 @@ const JobDetailPage = () => {
               </div>
 
               {/* Contact Info */}
-              {job.contact_info && (
+              {(job.contact_info?.owner_name || job.contact_info?.phone || job.contact_info?.email) ? (
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
                   <div className="space-y-3">
@@ -428,6 +429,21 @@ const JobDetailPage = () => {
                       </div>
                     )}
                   </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Contact Salon</h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    To protect employers from spam, contact details are shared through EmviApp.
+                  </p>
+                  <Button
+                    onClick={handleApply}
+                    variant="outline"
+                    className="w-full"
+                    disabled={isExpired}
+                  >
+                    Contact Salon — Free
+                  </Button>
                 </div>
               )}
 

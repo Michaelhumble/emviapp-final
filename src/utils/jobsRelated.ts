@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Job } from '@/types/job';
+import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
 
 export async function fetchRelatedJobs(params: { category?: string; location?: string; limit?: number }): Promise<Job[]> {
   const { category, location, limit = 12 } = params;
@@ -7,7 +8,7 @@ export async function fetchRelatedJobs(params: { category?: string; location?: s
 
   const query = supabase
     .from('jobs')
-    .select('*')
+    .select(PUBLIC_JOB_COLUMNS)
     .eq('status', 'active')
     .order('created_at', { ascending: false })
     .limit(limit);

@@ -7,6 +7,7 @@ import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useAuth } from '@/context/auth';
+import { useJobContactInfo } from '@/hooks/useJobContactInfo';
 
 import { isJobExpired, getDaysUntilExpiration } from '@/utils/jobExpiration';
 
@@ -19,6 +20,8 @@ interface JobDetailModalProps {
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onClose }) => {
   const { isSignedIn, user } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // contact_info is stripped from public job queries; signed-in users fetch it on demand
+  const fetchedContactInfo = useJobContactInfo(job?.id, Boolean(isSignedIn && isOpen && job?.id));
 
   // Ensure we have valid job data before rendering
   if (!job) {
@@ -266,6 +269,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       // Priority 2: root contact_info field
                       else if (job.contact_info && typeof job.contact_info === 'object') {
                         contactInfo = job.contact_info;
+                      }
+                      // Priority 2b: fetched on demand for signed-in users
+                      else if (fetchedContactInfo && typeof fetchedContactInfo === 'object') {
+                        contactInfo = fetchedContactInfo;
                       }
                       // Priority 3: Build from root fields (fallback for old jobs)
                       else {
