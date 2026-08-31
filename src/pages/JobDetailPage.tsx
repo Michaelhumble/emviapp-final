@@ -240,10 +240,14 @@ const JobDetailPage = () => {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
-        />
+        {/* Only emit JobPosting structured data for jobs that are genuinely open.
+            Expired postings must not be presented to Google as currently hiring. */}
+        {!isExpired && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
+          />
+        )}
       </Helmet>
       
       {/* Remove old JobPostingJsonLd component */}
