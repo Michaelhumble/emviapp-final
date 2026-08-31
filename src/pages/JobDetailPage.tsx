@@ -181,7 +181,8 @@ const JobDetailPage = () => {
     return `${m[1].trim().toLowerCase().replace(/\s+/g, '-')}-${m[2].toLowerCase()}`;
   })();
   const cityLabel = (job.location || '').split(',')[0]?.trim() || '';
-  const cityJobsHref = cityStateSlug ? `/jobs/in/${cityStateSlug}` : '/jobs';
+  // Canonical city hub is /jobs/{city-state} (see CityJobsLanding canonical).
+  const cityJobsHref = cityStateSlug ? `/jobs/${cityStateSlug}` : '/jobs';
   const roleCityJobsHref = roleSlug && cityStateSlug ? `/jobs/${roleSlug}/${cityStateSlug}` : cityJobsHref;
   const roleLabel = job.category ? job.category.replace(/\b\w/g, (c) => c.toUpperCase()) : 'Beauty';
 
