@@ -171,6 +171,20 @@ const JobDetailPage = () => {
   const isExpired = !isActive;
   const isFilled = job.status === 'filled' || job.status === 'closed';
 
+  // City / role context used for breadcrumbs, internal links and the
+  // "this job expired — see current jobs" experience.
+  const roleSlug = (job.category || '').trim().toLowerCase().replace(/\s+/g, '-');
+  const cityStateSlug = (() => {
+    const loc = (job.location || '').trim();
+    const m = loc.match(/^([^,]+),\s*([A-Za-z]{2})\b/);
+    if (!m) return '';
+    return `${m[1].trim().toLowerCase().replace(/\s+/g, '-')}-${m[2].toLowerCase()}`;
+  })();
+  const cityLabel = (job.location || '').split(',')[0]?.trim() || '';
+  const cityJobsHref = cityStateSlug ? `/jobs/in/${cityStateSlug}` : '/jobs';
+  const roleCityJobsHref = roleSlug && cityStateSlug ? `/jobs/${roleSlug}/${cityStateSlug}` : cityJobsHref;
+  const roleLabel = job.category ? job.category.replace(/\b\w/g, (c) => c.toUpperCase()) : 'Beauty';
+
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
