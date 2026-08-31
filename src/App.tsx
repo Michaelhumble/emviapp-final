@@ -96,6 +96,7 @@ const ManageBooking = lazy(() => import("@/pages/ManageBooking"));
 const SalonSuccessPage = lazy(() => import("@/pages/salon-success"));
 const AdminAgentConsole = lazy(() => import("@/pages/admin/agent"));
 const SEOHealth = lazy(() => import("@/pages/admin/SEOHealth"));
+const AdminSocialGrowth = lazy(() => import("@/pages/admin/SocialGrowth"));
 
 // Blog Pages
 const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
@@ -397,6 +398,7 @@ function App() {
                      <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                      <Route path="/admin/agent" element={<Suspense fallback={<SimpleLoadingFallback />}><AdminAgentConsole /></Suspense>} />
                      <Route path="/admin/seo-health" element={<Suspense fallback={<SimpleLoadingFallback />}><SEOHealth /></Suspense>} />
+                     <Route path="/admin/social" element={<Suspense fallback={<SimpleLoadingFallback />}><AdminSocialGrowth /></Suspense>} />
                     
                      {/* Homepage route - critical performance optimization */}
                       {/* Affiliate Program Routes */}

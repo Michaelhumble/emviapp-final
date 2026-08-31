@@ -184,3 +184,6 @@ schedule = "0 */2 * * *"
 [[edge_runtime.cron]]
 function = "seo-health-weekly"
 schedule = "0 3 * * 0"
+
+[functions.social-generate]
+verify_jwt = true
