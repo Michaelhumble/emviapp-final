@@ -20,6 +20,8 @@ import { Helmet } from 'react-helmet-async';
 import { jobPostingJsonLd, type JobPostingData } from "@/lib/seo/jsonld";
 import { SITE_BASE_URL } from '@/config/seo';
 import { PUBLIC_JOB_COLUMNS } from '@/lib/jobs/publicJobColumns';
+import ApplyFreeDialog from '@/components/jobs/ApplyFreeDialog';
+import { takePendingApplication } from '@/lib/jobs/applicationDraft';
 
 const JobDetailPage = () => {
   const params = useParams();
@@ -28,6 +30,14 @@ const JobDetailPage = () => {
   const location = useLocation();
   const { jobs, loading } = useOptimizedJobsData();
   const [job, setJob] = useState<Job | null>(null);
+  const [applyOpen, setApplyOpen] = useState(false);
+
+  // Restore an application the visitor started before signing up/in.
+  useEffect(() => {
+    const pending = takePendingApplication();
+    if (pending && pending === jobId) setApplyOpen(true);
+  }, [jobId]);
+
 
   // Get state from navigation (if coming from global jobs page)
   const { fromGlobalJobs, suggestIndustry } = location.state || {};
@@ -88,19 +98,9 @@ const JobDetailPage = () => {
   };
 
   const handleApply = () => {
-    // This would typically open an application modal or navigate to application form
-    if (job?.contact_info?.email) {
-      window.location.href = `mailto:${job.contact_info.email}?subject=Application for ${job.title}`;
-    } else {
-      // Fallback to a contact form or application page
-      navigate('/contact', { 
-        state: { 
-          jobId: job?.id, 
-          jobTitle: job?.title 
-        } 
-      });
-    }
+    setApplyOpen(true);
   };
+
 
   const getIndustryBadgeColor = (category: string) => {
     const colors = {

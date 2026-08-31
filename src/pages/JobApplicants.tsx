@@ -159,15 +159,13 @@ const JobApplicants: React.FC = () => {
                         Applied {new Date(r.created_at).toLocaleDateString()}
                       </p>
                       <div className="mt-3 flex gap-3">
-                        <Link to={`/u/${r.applicant_id}`} className="text-sm text-primary underline">
-                          View profile
-                        </Link>
                         {r.status === 'submitted' && (
                           <Button size="sm" variant="outline" onClick={() => markReviewed(r.id)}>
                             Mark reviewed
                           </Button>
                         )}
                       </div>
+
                     </div>
                   </div>
                 </div>
