@@ -31,10 +31,11 @@ async function fetchActiveJobsUpdatedOn(_dateStr?: string) {
   // returned only jobs whose updated_at fell on TODAY's UTC date, which
   // produced an empty sitemap whenever no jobs were edited that day.
   // Google needs a stable index of ALL currently-active job URLs.
-  const nowIso = new Date().toISOString();
+  const now = Date.now();
+  const nowIso = new Date(now).toISOString();
   const query = supabase
     .from('jobs')
-    .select('id, updated_at, expires_at, status, title, location, category')
+    .select('id, updated_at, created_at, expires_at, status, title, location, category')
     .eq('status', 'active')
     .or('expires_at.is.null,expires_at.gt.' + nowIso)
     .order('updated_at', { ascending: false })
@@ -42,14 +43,25 @@ async function fetchActiveJobsUpdatedOn(_dateStr?: string) {
 
   const { data, error } = await query;
   if (error) throw error;
-  
+
+  // The job detail page treats a job with no expires_at as expired 30 days
+  // after creation (and serves noindex). Mirror that rule here so the sitemap
+  // never advertises URLs that are noindexed / no longer hiring.
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const stillOpen = (job: any) => {
+    if (job.expires_at) return new Date(job.expires_at).getTime() > now;
+    if (!job.created_at) return false;
+    return new Date(job.created_at).getTime() + THIRTY_DAYS > now;
+  };
+
   // Only return jobs that have required fields for valid URLs
   return (data || []).filter(job => 
     job.id && 
     job.title && 
     job.title.trim() !== '' &&
     job.location && 
-    job.location.trim() !== ''
+    job.location.trim() !== '' &&
+    stillOpen(job)
   );
 }
 
