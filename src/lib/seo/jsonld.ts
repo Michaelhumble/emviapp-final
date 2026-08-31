@@ -142,29 +142,53 @@ export const jobPostingJsonLd = (job: JobPostingData) => {
         "addressCountry": "US"
       }
     },
-    "baseSalary": job.salary_range || job.compensation_details ? {
-      "@type": "MonetaryAmount",
-      "currency": "USD",
-      "value": {
-        "@type": "QuantitativeValue",
-        "value": job.salary_range || job.compensation_details,
-        "unitText": "YEAR"
-      }
-    } : undefined,
+    // Google requires a numeric baseSalary. Free-text pay ("$1,000/week", "commission")
+    // produces invalid structured data, so only emit when a number can be parsed.
+    "baseSalary": parseNumericSalary(job.salary_range || job.compensation_details),
     "workHours": job.employment_type === 'PART_TIME' ? "Part-time hours" : "Full-time hours",
     "qualifications": job.requirements || `Experience in ${job.category || 'beauty industry'} preferred`,
     "responsibilities": description,
-    "benefits": "Competitive compensation and benefits package",
     "url": `${SITE_BASE_URL}/jobs/${job.id}`,
+    // NOTE: never expose poster email/phone in public structured data (PII).
+    // Applications happen on-site via the free Apply flow.
+    "directApply": true,
     "applicationContact": {
       "@type": "ContactPoint",
       "contactType": "HR",
-      "email": job.contact_info?.email,
-      "telephone": job.contact_info?.phone,
       "url": `${SITE_BASE_URL}/jobs/${job.id}`
     },
     "industry": "Beauty and Personal Care",
     "occupationalCategory": job.category || "Beauty Professional"
+  };
+};
+
+// Parses a numeric USD amount out of free-text pay strings. Returns undefined
+// when no reliable number exists so we omit baseSalary entirely.
+const parseNumericSalary = (raw?: string) => {
+  if (!raw) return undefined;
+  const text = String(raw).toLowerCase();
+  const match = text.replace(/,/g, '').match(/\$?\s*(\d{2,7})(?:\s*(?:-|–|to)\s*\$?\s*(\d{2,7}))?/);
+  if (!match) return undefined;
+  const min = Number(match[1]);
+  const max = match[2] ? Number(match[2]) : undefined;
+  if (!Number.isFinite(min) || min <= 0) return undefined;
+
+  let unitText: 'HOUR' | 'WEEK' | 'MONTH' | 'YEAR' = 'YEAR';
+  if (/hour|\/hr|hr\b|per hour/.test(text)) unitText = 'HOUR';
+  else if (/week|\/wk|weekly/.test(text)) unitText = 'WEEK';
+  else if (/month|monthly/.test(text)) unitText = 'MONTH';
+  else if (/year|annual|\/yr/.test(text)) unitText = 'YEAR';
+  else if (min < 200) unitText = 'HOUR';
+  else if (min < 5000) unitText = 'WEEK';
+
+  return {
+    "@type": "MonetaryAmount",
+    "currency": "USD",
+    "value": {
+      "@type": "QuantitativeValue",
+      ...(max && max > min ? { minValue: min, maxValue: max } : { value: min }),
+      "unitText": unitText
+    }
   };
 };
 

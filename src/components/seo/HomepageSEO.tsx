@@ -66,8 +66,8 @@ const HomepageSEO = () => {
   return (
     <>
       <DynamicSEO
-        title="Find Nail Artists & Beauty Jobs with AI | EmviApp"
-        description="EmviApp is the premier AI-powered platform connecting beauty professionals with jobs, salons, and artists. Discover nail technician careers, salon opportunities, and top beauty talent in your city."
+        title="Nail & Beauty Salon Jobs Near You — Apply Free | EmviApp"
+        description="Browse nail technician, hair stylist, barber, lash and esthetician jobs by city. Apply free in minutes — or post a salon job free and hire beauty pros fast."
         canonicalUrl="https://www.emvi.app/"
         tags={[
           "beauty jobs",

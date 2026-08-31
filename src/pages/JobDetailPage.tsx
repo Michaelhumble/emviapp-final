@@ -171,10 +171,28 @@ const JobDetailPage = () => {
   const isExpired = !isActive;
   const isFilled = job.status === 'filled' || job.status === 'closed';
 
+  // City / role context used for breadcrumbs, internal links and the
+  // "this job expired — see current jobs" experience.
+  const roleSlug = (job.category || '').trim().toLowerCase().replace(/\s+/g, '-');
+  const cityStateSlug = (() => {
+    const loc = (job.location || '').trim();
+    const m = loc.match(/^([^,]+),\s*([A-Za-z]{2})\b/);
+    if (!m) return '';
+    return `${m[1].trim().toLowerCase().replace(/\s+/g, '-')}-${m[2].toLowerCase()}`;
+  })();
+  const cityLabel = (job.location || '').split(',')[0]?.trim() || '';
+  // Canonical city hub is /jobs/{city-state} (see CityJobsLanding canonical).
+  const cityJobsHref = cityStateSlug ? `/jobs/${cityStateSlug}` : '/jobs';
+  const roleCityJobsHref = roleSlug && cityStateSlug ? `/jobs/${roleSlug}/${cityStateSlug}` : cityJobsHref;
+  const roleLabel = job.category ? job.category.replace(/\b\w/g, (c) => c.toUpperCase()) : 'Beauty';
+
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
     { name: 'Jobs', href: '/jobs' },
+    // Internal links from the job up to its city / role hub pages.
+    ...(cityStateSlug ? [{ name: `${cityLabel} Jobs`, href: cityJobsHref }] : []),
+    ...(cityStateSlug && roleSlug ? [{ name: `${roleLabel} Jobs in ${cityLabel}`, href: roleCityJobsHref }] : []),
     { name: job.title, href: `/jobs/${job.id}`, current: true }
   ];
 
@@ -226,10 +244,14 @@ const JobDetailPage = () => {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
-        />
+        {/* Only emit JobPosting structured data for jobs that are genuinely open.
+            Expired postings must not be presented to Google as currently hiring. */}
+        {!isExpired && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
+          />
+        )}
       </Helmet>
       
       {/* Remove old JobPostingJsonLd component */}
@@ -319,11 +341,23 @@ const JobDetailPage = () => {
         {isExpired && (
           <div className="container mx-auto px-4 mt-6">
             <div className="rounded-lg border bg-muted/30 p-4">
-              <h2 className="text-lg font-semibold">This job is no longer accepting applications.</h2>
-              <p className="text-sm text-muted-foreground mt-1">Recently filled. Sign in to see open roles or post a job to hire faster.</p>
-              <div className="mt-3 flex gap-2">
-                <Button onClick={() => navigate('/signin?redirect=/jobs')}>Sign in to see open roles</Button>
-                <Button variant="outline" onClick={() => navigate('/post-job')}>Post a job</Button>
+              <h2 className="text-lg font-semibold">This position has expired.</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {cityLabel
+                  ? `See current ${roleLabel} jobs in ${cityLabel} — free to browse and apply.`
+                  : 'Browse current beauty jobs — free to browse and apply.'}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button onClick={() => navigate(roleCityJobsHref)}>
+                  {cityLabel ? `${roleLabel} jobs in ${cityLabel}` : 'Browse current jobs'}
+                </Button>
+                {cityLabel && (
+                  <Button variant="outline" onClick={() => navigate(cityJobsHref)}>
+                    All beauty jobs in {cityLabel}
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => navigate('/jobs')}>All open jobs</Button>
+                <Button variant="ghost" onClick={() => navigate('/post-job')}>Post a job — free</Button>
               </div>
             </div>
           </div>

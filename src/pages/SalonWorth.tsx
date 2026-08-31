@@ -138,10 +138,10 @@ const SalonWorth = () => {
   return (
     <TooltipProvider>
       <Helmet>
-        <title>Free Salon Worth Calculator | Value Your Nail Salon Business | EmviApp</title>
+        <title>Salon Valuation Calculator — What Is My Salon Worth? | EmviApp</title>
         <meta 
           name="description" 
-          content="Calculate your salon's market value using industry-standard SDE methodology. Get a free professional valuation based on profit, location, reviews, and market data."
+          content="Free salon valuation calculator. Find out what your nail or hair salon is worth in 2 minutes using SDE methodology — profit, location, reviews and market data. No signup to see your estimate."
         />
         <meta name="keywords" content="salon valuation, nail salon worth, business calculator, salon for sale, beauty business value, SDE valuation" />
         <link rel="canonical" href="https://www.emvi.app/salon-worth" />

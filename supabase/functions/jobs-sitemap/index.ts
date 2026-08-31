@@ -42,7 +42,12 @@ async function fetchActiveJobsUpdatedOn(_dateStr?: string) {
 
   const { data, error } = await query;
   if (error) throw error;
-  
+
+  // NOTE (SEO audit 2026-08-31): every job currently in this sitemap has a NULL
+  // expires_at and was created >30 days ago, so the detail page renders them as
+  // expired + noindex. Tightening this filter to match that rule would drop the
+  // sitemap to 0 URLs, so it is deliberately NOT applied yet — see the SEO report.
+
   // Only return jobs that have required fields for valid URLs
   return (data || []).filter(job => 
     job.id && 
