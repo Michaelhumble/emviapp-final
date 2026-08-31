@@ -3084,33 +3084,54 @@ export type Database = {
       }
       job_applications: {
         Row: {
-          applicant_id: string | null
+          applicant_id: string
           cover_letter: string | null
           created_at: string | null
           id: string
-          job_id: string | null
+          job_id: string
+          phone: string | null
+          reviewed_at: string | null
           status: string | null
           updated_at: string | null
         }
         Insert: {
-          applicant_id?: string | null
+          applicant_id: string
           cover_letter?: string | null
           created_at?: string | null
           id?: string
-          job_id?: string | null
+          job_id: string
+          phone?: string | null
+          reviewed_at?: string | null
           status?: string | null
           updated_at?: string | null
         }
         Update: {
-          applicant_id?: string | null
+          applicant_id?: string
           cover_letter?: string | null
           created_at?: string | null
           id?: string
-          job_id?: string | null
+          job_id?: string
+          phone?: string | null
+          reviewed_at?: string | null
           status?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "mv_jobs_recently_filled"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {

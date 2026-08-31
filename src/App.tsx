@@ -80,6 +80,9 @@ const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const EnhancedPostJob = lazy(() => import("@/pages/enhanced-post-job"));
 const PostJobFree = lazy(() => import("@/pages/PostJobFree"));
 const ManageJobs = lazy(() => import("@/pages/ManageJobs"));
+const JobApplicants = lazy(() => import("@/pages/JobApplicants"));
+const MyApplications = lazy(() => import("@/pages/MyApplications"));
+
 const SellSalonPage = lazy(() => import("@/pages/sell-salon"));
 const PostSalon = lazy(() => import("@/pages/PostSalon"));
 const SalonWorth = lazy(() => import("@/pages/SalonWorth"));
@@ -272,6 +275,9 @@ function App() {
                      <Route path="/post-job" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobFree /></Suspense>} />
                      <Route path="/post-job/nails" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobFree /></Suspense>} />
                      <Route path="/my-jobs" element={<Suspense fallback={<SimpleLoadingFallback />}><ManageJobs /></Suspense>} />
+                     <Route path="/my-jobs/:jobId/applicants" element={<Suspense fallback={<SimpleLoadingFallback />}><JobApplicants /></Suspense>} />
+                     <Route path="/my-applications" element={<Suspense fallback={<SimpleLoadingFallback />}><MyApplications /></Suspense>} />
+
 
                      <Route path="/post-job-billion" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobBillion /></Suspense>} />
                      <Route path="/post-job-experimental" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobExperimental /></Suspense>} />
