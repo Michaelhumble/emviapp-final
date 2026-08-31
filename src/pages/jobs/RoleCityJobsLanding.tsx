@@ -100,7 +100,7 @@ export default function RoleCityJobsLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
+      <BaseSEO title={title} description={description} canonical={canonical} jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>
