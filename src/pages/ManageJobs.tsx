@@ -114,7 +114,13 @@ const ManageJobs = () => {
                       </span>
                     )}
                   </div>
-                  <div className="flex gap-3 text-sm">
+                  <div className="flex gap-3 text-sm items-center">
+                    <a
+                      href={`/my-jobs/${job.id}/applicants`}
+                      className="text-primary underline font-medium"
+                    >
+                      Applicants ({job._count.applications})
+                    </a>
                     <a href={`/jobs/${job.id}`} className="text-primary underline">
                       View
                     </a>
@@ -122,6 +128,7 @@ const ManageJobs = () => {
                       Edit
                     </a>
                   </div>
+
                 </div>
               </div>
             ))}

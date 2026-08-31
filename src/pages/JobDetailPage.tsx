@@ -474,8 +474,16 @@ const JobDetailPage = () => {
             </div>
           </div>
         </div>
+
+        <ApplyFreeDialog
+          open={applyOpen}
+          onOpenChange={setApplyOpen}
+          jobId={job.id}
+          jobTitle={job.title || 'This job'}
+        />
     </div>
   );
+
 };
 
 export default JobDetailPage;
