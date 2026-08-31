@@ -29,6 +29,18 @@ const ManageJobs = () => {
 
         if (error) throw error;
 
+        const jobIds = (data || []).map((j: any) => j.id);
+        const counts: Record<string, number> = {};
+        if (jobIds.length) {
+          const { data: apps } = await (supabase as any)
+            .from('job_applications')
+            .select('job_id')
+            .in('job_id', jobIds);
+          (apps || []).forEach((a: any) => {
+            counts[a.job_id] = (counts[a.job_id] || 0) + 1;
+          });
+        }
+
         const transformedJobs: JobWithApplications[] = (data || []).map(job => ({
           id: job.id,
           title: job.title || 'Job Title',
@@ -45,9 +57,10 @@ const ManageJobs = () => {
           description: job.description || '',
           category: job.category || "Other",
           _count: {
-            applications: 0
+            applications: counts[job.id] || 0
           }
         }));
+
 
         setJobs(transformedJobs);
       } catch (error) {
