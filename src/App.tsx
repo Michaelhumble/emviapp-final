@@ -328,11 +328,12 @@ function App() {
                      {/* State Hub Pages (must come before city/role pages) */}
                      <Route path="/jobs/us/:stateSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><StateHubLanding /></Suspense></Layout>} />
                      
-                     {/* City/Role SEO Landing Pages (must come before generic :id route) */}
-                     <Route path="/jobs/:roleSlug/:citySlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityRoleJobLanding /></Suspense></Layout>} />
-                     
-                     <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
+                      {/* Explicit city route must precede dynamic two-segment role+city routes */}
+                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                      
+                      {/* City/Role SEO Landing Pages (must come before generic :id route) */}
+                      <Route path="/jobs/:roleSlug/:citySlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityRoleJobLanding /></Suspense></Layout>} />
+                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
                      {/* Single dynamic segment: wrapper renders JobDetailPage for UUIDs, CityJobsLanding otherwise */}
                      <Route path="/jobs/:cityState" element={<Layout><JobDetailOrCity /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
