@@ -1,0 +1,1 @@
+REVOKE ALL ON public.job_applications FROM anon;
