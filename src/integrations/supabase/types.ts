@@ -5437,6 +5437,126 @@ export type Database = {
         }
         Relationships: []
       }
+      social_connections: {
+        Row: {
+          account_label: string | null
+          created_at: string
+          id: string
+          last_checked_at: string | null
+          notes: string | null
+          platform: string
+          provider: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          account_label?: string | null
+          created_at?: string
+          id?: string
+          last_checked_at?: string | null
+          notes?: string | null
+          platform: string
+          provider?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          account_label?: string | null
+          created_at?: string
+          id?: string
+          last_checked_at?: string | null
+          notes?: string | null
+          platform?: string
+          provider?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      social_content_queue: {
+        Row: {
+          caption: string
+          content_type: string
+          created_at: string
+          creative_brief: string | null
+          cta: string | null
+          dedupe_key: string | null
+          external_post_id: string | null
+          external_post_url: string | null
+          fact_check_notes: string | null
+          fact_check_status: string
+          hashtags: string[]
+          headline: string | null
+          id: string
+          language: string
+          platform: string
+          published_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scheduled_at: string | null
+          source_id: string | null
+          source_type: string
+          source_url: string | null
+          status: string
+          target_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          caption: string
+          content_type: string
+          created_at?: string
+          creative_brief?: string | null
+          cta?: string | null
+          dedupe_key?: string | null
+          external_post_id?: string | null
+          external_post_url?: string | null
+          fact_check_notes?: string | null
+          fact_check_status?: string
+          hashtags?: string[]
+          headline?: string | null
+          id?: string
+          language?: string
+          platform: string
+          published_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scheduled_at?: string | null
+          source_id?: string | null
+          source_type: string
+          source_url?: string | null
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          content_type?: string
+          created_at?: string
+          creative_brief?: string | null
+          cta?: string | null
+          dedupe_key?: string | null
+          external_post_id?: string | null
+          external_post_url?: string | null
+          fact_check_notes?: string | null
+          fact_check_status?: string
+          hashtags?: string[]
+          headline?: string | null
+          id?: string
+          language?: string
+          platform?: string
+          published_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scheduled_at?: string | null
+          source_id?: string | null
+          source_type?: string
+          source_url?: string | null
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       social_shares: {
         Row: {
           content_id: string
