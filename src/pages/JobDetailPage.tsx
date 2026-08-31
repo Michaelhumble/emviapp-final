@@ -337,11 +337,23 @@ const JobDetailPage = () => {
         {isExpired && (
           <div className="container mx-auto px-4 mt-6">
             <div className="rounded-lg border bg-muted/30 p-4">
-              <h2 className="text-lg font-semibold">This job is no longer accepting applications.</h2>
-              <p className="text-sm text-muted-foreground mt-1">Recently filled. Sign in to see open roles or post a job to hire faster.</p>
-              <div className="mt-3 flex gap-2">
-                <Button onClick={() => navigate('/signin?redirect=/jobs')}>Sign in to see open roles</Button>
-                <Button variant="outline" onClick={() => navigate('/post-job')}>Post a job</Button>
+              <h2 className="text-lg font-semibold">This position has expired.</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {cityLabel
+                  ? `See current ${roleLabel} jobs in ${cityLabel} — free to browse and apply.`
+                  : 'Browse current beauty jobs — free to browse and apply.'}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button onClick={() => navigate(roleCityJobsHref)}>
+                  {cityLabel ? `${roleLabel} jobs in ${cityLabel}` : 'Browse current jobs'}
+                </Button>
+                {cityLabel && (
+                  <Button variant="outline" onClick={() => navigate(cityJobsHref)}>
+                    All beauty jobs in {cityLabel}
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => navigate('/jobs')}>All open jobs</Button>
+                <Button variant="ghost" onClick={() => navigate('/post-job')}>Post a job — free</Button>
               </div>
             </div>
           </div>
