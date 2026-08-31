@@ -27,7 +27,9 @@ function parseCityState(slug?: string) {
 }
 
 export default function RoleCityJobsLanding() {
-  const { role = '', cityState } = useParams();
+  const params = useParams();
+  const role = params.role || params.roleSlug || '';
+  const cityState = params.cityState || params.citySlug || '';
   const navigate = useNavigate();
   const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
   useEffect(() => {
