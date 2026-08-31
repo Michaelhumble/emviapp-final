@@ -189,6 +189,9 @@ const JobDetailPage = () => {
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
     { name: 'Jobs', href: '/jobs' },
+    // Internal links from the job up to its city / role hub pages.
+    ...(cityStateSlug ? [{ name: `${cityLabel} Jobs`, href: cityJobsHref }] : []),
+    ...(cityStateSlug && roleSlug ? [{ name: `${roleLabel} Jobs in ${cityLabel}`, href: roleCityJobsHref }] : []),
     { name: job.title, href: `/jobs/${job.id}`, current: true }
   ];
 
