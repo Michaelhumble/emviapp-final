@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { CITY_ROLE_SEEDS, generateCityRoleContent } from '@/data/seo-city-role-seeds';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, MapPin, Briefcase } from 'lucide-react';
+import RoleCityJobsLanding from './RoleCityJobsLanding';
 
 export default function CityRoleJobLanding() {
   const { roleSlug, citySlug } = useParams();
@@ -10,8 +11,10 @@ export default function CityRoleJobLanding() {
   const role = CITY_ROLE_SEEDS.roles.find(r => r.id === roleSlug);
   const city = CITY_ROLE_SEEDS.cities.find(c => c.id === citySlug);
 
+  // Non-seeded role/city combos (e.g. /jobs/nails/houston-tx) fall back to the
+  // generic dynamic role+city landing page instead of a dead "Page not found".
   if (!role || !city) {
-    return <div>Page not found</div>;
+    return <RoleCityJobsLanding />;
   }
 
   const content = generateCityRoleContent(role.name, city.name, city.state);

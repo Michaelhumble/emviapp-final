@@ -27,7 +27,9 @@ function parseCityState(slug?: string) {
 }
 
 export default function RoleCityJobsLanding() {
-  const { role = '', cityState } = useParams();
+  const params = useParams();
+  const role = params.role || params.roleSlug || '';
+  const cityState = params.cityState || params.citySlug || '';
   const navigate = useNavigate();
   const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function RoleCityJobsLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
+      <BaseSEO title={title} description={description} canonical={canonical} jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>
